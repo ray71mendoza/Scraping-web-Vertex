@@ -1,0 +1,20 @@
+# ── VERTEX Worker (BullMQ + Playwright) ──
+FROM mcr.microsoft.com/playwright:v1.48.0-noble AS base
+WORKDIR /app
+
+# Install dependencies
+COPY package.json package-lock.json* ./
+COPY packages/queue/package.json ./packages/queue/
+COPY packages/database/package.json ./packages/database/
+COPY packages/shared/package.json ./packages/shared/
+COPY packages/scraper/package.json ./packages/scraper/
+RUN npm install
+
+# Copy source
+COPY . .
+
+# Generate Prisma client
+RUN npx prisma generate --schema=packages/database/prisma/schema.prisma
+
+# Run workers
+CMD ["npx", "tsx", "packages/queue/src/start-workers.ts"]

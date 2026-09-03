@@ -1,0 +1,133 @@
+// ═══════════════════════════════════════════════════════════
+// VERTEX Prospect — Prisma Schema
+// ═══════════════════════════════════════════════════════════
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ── Enums ────────────────────────────────────────────────────
+
+enum LeadStatus {
+  DISCOVERED
+  QUALIFIED
+  PROPOSAL_GENERATED
+  CONTACTED
+  CONVERTED
+  DISCARDED
+}
+
+enum OpportunityLevel {
+  VERY_HIGH
+  HIGH
+  MEDIUM
+  LOW
+}
+
+// ── Organizations (Multi-Tenant) ─────────────────────────────
+
+model Organization {
+  id            String   @id @default(uuid())
+  name          String
+  apiQuotaLimit Int      @default(1000) @map("api_quota_limit")
+  apiQuotaUsed  Int      @default(0) @map("api_quota_used")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  campaigns SearchCampaign[]
+  leads     Lead[]
+  users     User[]
+
+  @@map("organizations")
+}
+
+// ── Users ────────────────────────────────────────────────────
+
+model User {
+  id             String   @id @default(uuid())
+  organizationId String   @map("organization_id")
+  email          String   @unique
+  name           String
+  passwordHash   String   @map("password_hash")
+  role           String   @default("member") // admin, member
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("users")
+}
+
+// ── Search Campaigns ─────────────────────────────────────────
+
+model SearchCampaign {
+  id             String   @id @default(uuid())
+  organizationId String   @map("organization_id")
+  queryTerm      String   @map("query_term")
+  location       String
+  radiusMeters   Int      @default(10000) @map("radius_meters")
+  totalFound     Int      @default(0) @map("total_found")
+  status         String   @default("RUNNING") // RUNNING, COMPLETED, FAILED
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  leads        Lead[]
+
+  @@map("search_campaigns")
+}
+
+// ── Leads ────────────────────────────────────────────────────
+
+model Lead {
+  id             String @id @default(uuid())
+  campaignId     String @map("campaign_id")
+  organizationId String @map("organization_id")
+  googlePlaceId  String @unique @map("google_place_id")
+  businessName   String @map("business_name")
+  formattedAddress String? @map("formatted_address")
+  internationalPhone String? @map("international_phone")
+  websiteUrl     String? @map("website_url")
+  googleMapsUrl  String? @map("google_maps_url")
+  googleRating   Float?  @map("google_rating")
+  googleUserRatingsTotal Int? @map("google_user_ratings_total")
+  businessTypes  String[] @default([]) @map("business_types")
+
+  // ── Digital Maturity Flags ──
+  hasWebsite     Boolean @default(false) @map("has_website")
+  hasValidSsl    Boolean @default(false) @map("has_valid_ssl")
+  hasCustomDomain Boolean @default(false) @map("has_custom_domain")
+  isResponsive   Boolean @default(false) @map("is_responsive")
+  hasMetaOg      Boolean @default(false) @map("has_meta_og")
+  hasFacebook    Boolean @default(false) @map("has_facebook")
+  hasInstagram   Boolean @default(false) @map("has_instagram")
+  hasWhatsapp    Boolean @default(false) @map("has_whatsapp")
+  hasTiktok      Boolean @default(false) @map("has_tiktok")
+  detectedEmails String[] @default([]) @map("detected_emails")
+  detectedCms    String?  @map("detected_cms")
+
+  // ── Scoring ──
+  digitalScore     Int @default(0) @map("digital_score")
+  opportunityScore Int @default(0) @map("opportunity_score")
+  opportunityTier  OpportunityLevel @default(VERY_HIGH) @map("opportunity_tier")
+
+  // ── Status & AI ──
+  status       LeadStatus @default(DISCOVERED)
+  aiDiagnosis  Json?      @map("ai_diagnosis")
+  rawScrapedData Json?    @map("raw_scraped_data")
+
+  // ── Timestamps ──
+  enrichedAt DateTime? @map("enriched_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  campaign     SearchCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  organization Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([opportunityTier, organizationId])
+  @@index([campaignId])
+  @@index([status])
+  @@map("leads")
+}

@@ -1,0 +1,100 @@
+# ═══════════════════════════════════════════════════════════
+# VERTEX Prospect — Docker Compose
+# ═══════════════════════════════════════════════════════════
+# Multi-container setup: App, API, Postgres, Redis, Worker
+
+services:
+  # ── PostgreSQL ──────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: vertex-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: vertex_prospect
+      POSTGRES_USER: vertex
+      POSTGRES_PASSWORD: vertex_secret
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vertex -d vertex_prospect"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Redis ───────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: vertex-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── NestJS API ──────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+    container_name: vertex-api
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    environment:
+      NODE_ENV: production
+      APP_PORT: 4000
+      DATABASE_URL: postgresql://vertex:vertex_secret@postgres:5432/vertex_prospect?schema=public
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:-change_me_in_production}
+      GOOGLE_PLACES_API_KEY: ${GOOGLE_PLACES_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # ── Next.js Frontend ────────────────────────────────────
+  web:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.web
+    container_name: vertex-web
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://api:4000/api/v1
+    depends_on:
+      - api
+
+  # ── BullMQ Worker ───────────────────────────────────────
+  worker:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.worker
+    container_name: vertex-worker
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://vertex:vertex_secret@postgres:5432/vertex_prospect?schema=public
+      REDIS_URL: redis://redis:6379
+      SCRAPER_TIMEOUT_MS: 8000
+      DISCOVERY_QUEUE_CONCURRENCY: 5
+      ENRICHMENT_QUEUE_CONCURRENCY: 3
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  redis_data:
