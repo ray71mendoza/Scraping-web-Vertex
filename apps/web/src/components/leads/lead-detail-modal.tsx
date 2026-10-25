@@ -309,11 +309,13 @@ export function LeadDetailModal({
 
                   {lead.detectedEmails?.[0] && (
                     <a
-                      href={`mailto:${lead.detectedEmails[0]}?subject=${encodeURIComponent(proposal.outreachEmail.subject)}&body=${encodeURIComponent(proposal.outreachEmail.body)}`}
+                      href={`https://mail.google.com/mail/?view=cm&fs=1&to=${lead.detectedEmails[0]}&su=${encodeURIComponent(proposal.outreachEmail.subject)}&body=${encodeURIComponent(proposal.outreachEmail.body)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="px-3.5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-blue-600/20 transition-all"
                     >
                       <Mail className="w-4 h-4" />
-                      <span>Abrir Correo</span>
+                      <span>Enviar por Gmail</span>
                     </a>
                   )}
 

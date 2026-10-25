@@ -183,14 +183,16 @@ export function LeadTable({
 
                   {lead.detectedEmails && lead.detectedEmails.length > 0 && (
                     <a
-                      href={`mailto:${lead.detectedEmails[0]}?subject=${encodeURIComponent(
+                      href={`https://mail.google.com/mail/?view=cm&fs=1&to=${lead.detectedEmails[0]}&su=${encodeURIComponent(
                         (lead.aiDiagnosis as any)?.outreachEmail?.subject ||
-                          `${lead.businessName}: Diagnóstico y Oportunidad Digital`
+                          `${lead.businessName}: Propuesta de Crecimiento Digital — VERTEX SAS`
                       )}&body=${encodeURIComponent(
                         (lead.aiDiagnosis as any)?.outreachEmail?.body ||
-                          `Hola equipo de ${lead.businessName},\n\nRealizamos una auditoría de su negocio y encontramos áreas de oportunidad...`
+                          `Estimado equipo de ${lead.businessName},\n\nLe saluda el equipo de VERTEX SAS (https://vertexcorp.com.co/es)...`
                       )}`}
-                      title="Enviar Propuesta por Correo"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Enviar Propuesta por Gmail (gerenciavertexsas@gmail.com)"
                       className="p-1.5 rounded-lg bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 border border-blue-500/20 transition-all hover:scale-105"
                     >
                       <Mail className="w-3.5 h-3.5" />
