@@ -221,6 +221,9 @@ class MockStore {
   }
 
   createCampaign(dto: CreateCampaignDto): SearchCampaign & { placesFound: number } {
+    // Automatically wipe previous searches so database stays clean and uncluttered
+    this.clearAllData();
+
     const newId = "camp_" + Date.now().toString(36);
     const count = 50;
     const newCampaign: SearchCampaign = {
@@ -234,7 +237,7 @@ class MockStore {
       createdAt: new Date(),
     };
 
-    this.campaigns.unshift(newCampaign);
+    this.campaigns = [newCampaign];
 
     const suffixes = [
       "Central", "Express", "Del Norte", "San José", "El Refugio", "Elite", "Sol & Luna",

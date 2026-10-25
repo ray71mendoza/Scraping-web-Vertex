@@ -34,6 +34,12 @@ export default function CampaignLeadsClient() {
 
   React.useEffect(() => {
     if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      const queryId = urlParams.get("id");
+      if (queryId) {
+        setCampaignId(queryId);
+        return;
+      }
       const parts = window.location.pathname.split("/").filter(Boolean);
       const last = parts[parts.length - 1];
       if (last && last !== "prospecting" && last !== "default") {

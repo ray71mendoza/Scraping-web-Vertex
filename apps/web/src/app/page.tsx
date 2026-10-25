@@ -86,14 +86,14 @@ export default function DashboardHomePage() {
 
           <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5 space-y-2">
             <div className="flex items-center justify-between text-gray-400">
-              <span className="text-xs font-bold uppercase tracking-wider">Créditos de Extracción</span>
-              <Users className="w-4 h-4 text-pink-400" />
+              <span className="text-xs font-bold uppercase tracking-wider">Modo Prospección</span>
+              <Sparkles className="w-4 h-4 text-emerald-400" />
             </div>
-            <div className="text-2xl font-black text-white font-mono">
-              980 / 1,000
+            <div className="text-2xl font-black text-emerald-400 font-mono">
+              ILIMITADO
             </div>
-            <div className="text-xs text-indigo-400 font-medium">
-              FieldMasks optimizados activos
+            <div className="text-xs text-emerald-300 font-medium">
+              VERTEX SAS • Acceso Corporativo Libre
             </div>
           </div>
         </div>
@@ -102,20 +102,36 @@ export default function DashboardHomePage() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-base font-bold text-white">Campañas de Prospección</h3>
-            <Link
-              href="/prospecting/new"
-              className="text-xs text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-1"
-            >
-              <span>Nueva Búsqueda</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={async () => {
+                  const confirmClear = window.confirm(
+                    "¿Deseas limpiar todas las búsquedas anteriores para empezar desde cero?"
+                  );
+                  if (!confirmClear) return;
+                  await api.clearAllData();
+                  window.location.href = "/prospecting/new";
+                }}
+                className="text-xs text-red-400 hover:text-red-300 font-semibold px-3 py-1 rounded-lg border border-red-500/20 bg-red-500/10 transition-colors"
+              >
+                Limpiar Historial
+              </button>
+              <Link
+                href="/prospecting/new"
+                className="text-xs text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-1"
+              >
+                <span>Nueva Búsqueda</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {campaigns?.map((c) => (
               <Link
                 key={c.id}
-                href={`/prospecting/${c.id}`}
+                href={`/prospecting?id=${c.id}`}
                 className="p-5 rounded-2xl bg-[#0e0e17]/80 border border-white/5 hover:border-indigo-500/30 transition-all duration-200 group flex flex-col justify-between h-44 shadow-lg hover:shadow-indigo-500/10"
               >
                 <div>
@@ -138,7 +154,7 @@ export default function DashboardHomePage() {
                     Radio: <strong className="text-gray-300">{(c.radiusMeters / 1000).toFixed(0)} km</strong>
                   </span>
                   <div className="flex items-center gap-1 font-semibold text-white group-hover:text-indigo-300">
-                    <span>Ver Leads</span>
+                    <span>Ver Leads (50)</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </div>
                 </div>

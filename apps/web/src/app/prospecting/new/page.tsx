@@ -42,7 +42,7 @@ export default function NewProspectingPage() {
         radiusMeters: radiusKm * 1000,
       });
 
-      router.push(`/prospecting/${res.id}`);
+      router.push(`/prospecting?id=${res.id}`);
     } catch (err) {
       alert("Error al iniciar campaña: " + (err as any)?.message);
       setIsSubmitting(false);

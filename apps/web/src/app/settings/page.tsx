@@ -52,37 +52,38 @@ export default function SettingsPage() {
       />
 
       <main className="p-8 max-w-5xl w-full mx-auto space-y-8">
-        {/* Quota & Usage Meter Card */}
+        {/* Database Management & Auto-Cleanup Card */}
         <div className="p-6 rounded-3xl bg-[#0e0e17]/80 border border-white/5 space-y-5 backdrop-blur-xl shadow-xl">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center">
-                <Coins className="w-5 h-5" />
+              <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+                <ShieldCheck className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-white">Consumo de Cuota de API</h3>
+                <h3 className="text-sm font-bold text-white">Gestión de Memoria y Base de Datos</h3>
                 <p className="text-xs text-gray-400">
-                  Límite mensual asignado a tu organización para auditoría y scraping
+                  Modo Ilimitado VERTEX SAS • Limpieza automática activada en cada nueva búsqueda
                 </p>
               </div>
             </div>
-            <span className="text-xs font-bold font-mono text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-3 py-1 rounded-full">
-              {remaining} créditos restantes
-            </span>
+            <button
+              type="button"
+              onClick={async () => {
+                await api.clearAllData();
+                alert("Base de datos y búsquedas anteriores limpiadas con éxito.");
+                window.location.href = "/prospecting/new";
+              }}
+              className="px-4 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-300 hover:text-red-200 border border-red-500/30 text-xs font-bold transition-colors shrink-0"
+            >
+              Vaciar Historial y Limpiar Ahora
+            </button>
           </div>
 
-          {/* Progress Bar */}
-          <div className="space-y-2">
-            <div className="w-full bg-[#08080d] h-3 rounded-full overflow-hidden border border-white/5">
-              <div
-                className="bg-gradient-to-r from-indigo-500 to-purple-500 h-full rounded-full transition-all duration-500"
-                style={{ width: `${Math.max(usedPercent, 2)}%` }}
-              />
-            </div>
-            <div className="flex justify-between text-[11px] text-gray-400 font-mono">
-              <span>{used} consumidos ({usedPercent}%)</span>
-              <span>Límite: {limit} llamadas</span>
-            </div>
+          <div className="p-4 rounded-2xl bg-emerald-950/20 border border-emerald-500/20 text-xs text-emerald-200 flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+            <span>
+              <strong>Auto-limpieza activa:</strong> Cada vez que inicias una nueva prospección, las búsquedas anteriores se limpian automáticamente para no saturar memoria ni espacio en la base de datos.
+            </span>
           </div>
         </div>
 
