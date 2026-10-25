@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "vertex-prospect",
+  "name": "scraping-web-vertex",
   "compatibility_date": "2024-10-01",
   "compatibility_flags": ["nodejs_compat"],
   "assets": {
