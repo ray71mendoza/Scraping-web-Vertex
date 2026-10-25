@@ -87,20 +87,36 @@ export function createDiscoveryWorker(redisUrl?: string): Worker<DiscoveryJobDat
             if (place.userRatingCount && place.userRatingCount > 20) basicScore += 15;
             if (place.nationalPhoneNumber || place.internationalPhoneNumber) basicScore += 5;
 
+            const oppScore = 100 - basicScore;
+            const diagnosis = {
+              digitalGapAnalysis: `${place.displayName} no cuenta con presencia web digital. Esto representa una fuga crítica de clientes en Google Maps que buscan sus servicios.`,
+              highImpactServices: [
+                'Desarrollo de Sitio Web Corporativo + SEO Local',
+                'Integración de Canal y Chatbot de WhatsApp',
+                'Perfil de Google Business Optimizado',
+              ],
+              outreachEmail: {
+                subject: `${place.displayName}: Oportunidad de captar más clientes en Google`,
+                body: `Estimado equipo de ${place.displayName},\n\nNotamos que su negocio cuenta con clientes satisfechos pero no dispone de un sitio web oficial para captar búsquedas online.\n\nEn VERTEX diseñamos páginas web rápidas y sistemas de captación directa para negocios locales.\n\n¿Le interesaría ver una propuesta sin costo?\n\nSaludos cordiales,\nEquipo VERTEX`,
+              },
+              whatsappHook: `¡Hola ${place.displayName}! 👋 Vimos su negocio en Google Maps. Diseñamos páginas web y sistemas de citas para que consiga más clientes online sin complicaciones. ¿Le gustaría ver una demo de 2 minutos? 📲`,
+            };
+
             await prisma.lead.update({
               where: { id: lead.id },
               data: {
                 digitalScore: basicScore,
-                opportunityScore: 100 - basicScore,
+                opportunityScore: oppScore,
                 opportunityTier:
-                  100 - basicScore >= 80
+                  oppScore >= 80
                     ? 'VERY_HIGH'
-                    : 100 - basicScore >= 60
+                    : oppScore >= 60
                       ? 'HIGH'
-                      : 100 - basicScore >= 40
+                      : oppScore >= 40
                         ? 'MEDIUM'
                         : 'LOW',
-                status: 'QUALIFIED',
+                status: 'PROPOSAL_GENERATED',
+                aiDiagnosis: diagnosis as any,
               },
             });
           }

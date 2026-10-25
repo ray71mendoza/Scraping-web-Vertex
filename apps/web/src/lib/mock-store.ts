@@ -223,30 +223,44 @@ class MockStore {
 
   createCampaign(dto: CreateCampaignDto): SearchCampaign & { placesFound: number } {
     const newId = "camp_" + Date.now().toString(36);
+    const count = 50;
     const newCampaign: SearchCampaign = {
       id: newId,
       organizationId: "00000000-0000-0000-0000-000000000001",
       queryTerm: dto.queryTerm,
       location: dto.location,
       radiusMeters: dto.radiusMeters,
-      totalFound: 4,
+      totalFound: count,
       status: "COMPLETED",
       createdAt: new Date(),
     };
 
     this.campaigns.unshift(newCampaign);
 
-    // Generate 4 realistic discovered leads for this campaign
-    const mockNames = [
-      `${dto.queryTerm} Express & Premium`,
-      `Centro Especializado ${dto.queryTerm}`,
-      `${dto.queryTerm} del Norte`,
-      `Alianza Comercial & Servicios`,
+    const suffixes = [
+      "Central", "Express", "Del Norte", "San José", "El Refugio", "Elite", "Sol & Luna",
+      "Plaza Real", "Caribe", "La Casona", "Premium", "Santa María", "Metropolitano", "Colonial",
+      "Marítimo", "Bocagrande", "Manga", "Castillogrande", "Getsemaní", "Pie de la Popa",
+      "San Diego", "El Cabrero", "Crespo", "Marbella", "Américas", "Provincia", "Alborada",
+      "Horizonte", "San Pedro", "Nueva Era", "Especialistas", "Integral", "Vanguardia",
+      "Internacional", "La Bahía", "Los Alpes", "Costa Azul", "San Francisco", "El Prado",
+      "Alameda", "Diamante", "Portales", "Mirador", "Andina", "Austral", "San Luis",
+      "Conquistadores", "Bicentenario", "Península", "Las Palmeras"
     ];
 
-    const generatedLeads: Lead[] = mockNames.map((name, idx) => {
-      const hasWeb = idx % 2 === 0;
-      const digitalScore = hasWeb ? 30 + idx * 15 : 15 + idx * 5;
+    const generatedLeads: Lead[] = [];
+
+    for (let idx = 0; idx < count; idx++) {
+      const suffix = suffixes[idx % suffixes.length] + (idx >= suffixes.length ? ` ${Math.floor(idx / suffixes.length) + 1}` : "");
+      const name = `${dto.queryTerm} ${suffix}`;
+      const hasWeb = idx % 5 !== 0 && idx % 5 !== 2;
+      const hasSsl = hasWeb && idx % 3 !== 0;
+      const hasWa = idx % 2 === 0;
+      const hasIg = idx % 3 === 0;
+      const hasFb = idx % 2 === 1;
+      const cleanSlug = name.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+      const digitalScore = (hasWeb ? 35 : 0) + (hasSsl ? 20 : 0) + (hasWa ? 15 : 0) + (hasFb || hasIg ? 15 : 0) + 10;
       const oppScore = 100 - digitalScore;
       const oppTier =
         oppScore >= 80
@@ -257,42 +271,63 @@ class MockStore {
           ? OpportunityLevel.MEDIUM
           : OpportunityLevel.LOW;
 
-      return {
+      const falencias: string[] = [];
+      if (!hasWeb) falencias.push("Sin presencia web ni catálogo digital");
+      if (hasWeb && !hasSsl) falencias.push("Sitio web inseguro (sin certificado SSL HTTPS)");
+      if (!hasWa) falencias.push("Sin canal directo de atención vía WhatsApp");
+      if (!hasIg && !hasFb) falencias.push("Presencia nula en redes sociales");
+      if (falencias.length === 0) falencias.push("Falta de sistema automatizado de citas y captación de clientes");
+
+      const diagnosis: AIDiagnosis = {
+        digitalGapAnalysis: `${name} en ${dto.location} presenta brechas digitales críticas: ${falencias.join(", ")}. Esto ocasiona pérdida recurrente de clientes potenciales que buscan servicios locales online.`,
+        highImpactServices: [
+          hasWeb ? "Rediseño Web de Alta Conversión con SSL" : "Desarrollo de Sitio Web Corporativo + SEO Local",
+          "Automatización de Ventas y Citas por WhatsApp 24/7",
+          "Estrategia de Captación y Posicionamiento en Google Maps",
+        ],
+        outreachEmail: {
+          subject: `${name}: Oportunidad de modernización digital en ${dto.location}`,
+          body: `Estimado equipo de ${name},\n\nRevisamos su presencia comercial en ${dto.location} y detectamos puntos de mejora cruciales: ${falencias.join("; ")}.\n\nEn VERTEX ayudamos a negocios de ${dto.queryTerm} a implementar tecnología web segura y sistemas automáticos de captación que incrementan consultas y ventas.\n\n¿Tienen 10 minutos esta semana para una breve videollamada demostrativa sin costo?\n\nSaludos atentos,\nEquipo VERTEX`,
+        },
+        whatsappHook: `¡Hola ${name}! 👋 Vimos su negocio en ${dto.location}. Detectamos oportunidades clave para aumentar sus clientes online mejorando ${falencias[0].toLowerCase()}. ¿Le gustaría ver una propuesta personalizada de 2 minutos? 🚀`,
+      };
+
+      generatedLeads.push({
         id: `lead_${Date.now()}_${idx}`,
         campaignId: newId,
         organizationId: "00000000-0000-0000-0000-000000000001",
         googlePlaceId: `ChIJ_${newId}_${idx}`,
         businessName: name,
-        formattedAddress: `Av. Principal #${10 + idx * 15}-20, ${dto.location}`,
-        internationalPhone: `+57300${1000000 + idx * 123456}`,
-        websiteUrl: hasWeb ? `https://${name.toLowerCase().replace(/[^a-z]/g, "")}.com` : null,
-        googleRating: 3.9 + (idx % 3) * 0.4,
-        googleUserRatingsTotal: 18 + idx * 24,
+        formattedAddress: `Cra ${2 + (idx % 25)} #${10 + (idx * 3) % 80}-${15 + (idx % 40)}, ${dto.location}`,
+        internationalPhone: `+57300${1000000 + (idx * 179243) % 8999999}`,
+        websiteUrl: hasWeb ? (hasSsl ? `https://www.${cleanSlug}.com.co` : `http://${cleanSlug}.com`) : null,
+        googleRating: Number((3.6 + (idx % 14) * 0.1).toFixed(1)),
+        googleUserRatingsTotal: 8 + (idx * 11) % 150,
         hasWebsite: hasWeb,
-        hasValidSsl: hasWeb && idx > 0,
+        hasValidSsl: hasSsl,
         hasCustomDomain: hasWeb,
-        hasFacebook: true,
-        hasInstagram: idx % 2 === 1,
-        hasWhatsapp: idx % 2 === 0,
+        hasFacebook: hasFb,
+        hasInstagram: hasIg,
+        hasWhatsapp: hasWa,
         hasTiktok: false,
-        detectedEmails: [`contacto@${name.toLowerCase().replace(/[^a-z]/g, "")}.com`],
+        detectedEmails: [`contacto@${cleanSlug}.com`, `gerencia@${cleanSlug}.com`],
         detectedCms: hasWeb ? (idx % 2 === 0 ? "WordPress" : "Shopify") : null,
         digitalScore,
         opportunityScore: oppScore,
         opportunityTier: oppTier,
-        status: LeadStatus.DISCOVERED,
-        aiDiagnosis: null,
+        status: LeadStatus.PROPOSAL_GENERATED,
+        aiDiagnosis: diagnosis,
         createdAt: new Date(),
         updatedAt: new Date(),
-      };
-    });
+      });
+    }
 
     this.leads.unshift(...generatedLeads);
-    this.quota.used += 5;
-    this.quota.remaining -= 5;
+    this.quota.used += count;
+    this.quota.remaining = Math.max(0, this.quota.limit - this.quota.used);
     this.save();
 
-    return { ...newCampaign, placesFound: 4 };
+    return { ...newCampaign, placesFound: count };
   }
 
   getLeads(filters: LeadListFilters): LeadListResponse {

@@ -165,16 +165,47 @@ export function LeadTable({
 
               {/* Actions */}
               <td className="py-4 px-4 text-right">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onSelectLead(lead);
-                  }}
-                  className="btn-accent text-xs px-3 py-1.5 font-medium inline-flex items-center gap-1.5"
-                >
-                  <Sparkles className="w-3 h-3" />
-                  <span>Propuesta IA</span>
-                </button>
+                <div className="flex items-center justify-end gap-1.5" onClick={(e) => e.stopPropagation()}>
+                  {lead.internationalPhone && (
+                    <a
+                      href={`https://wa.me/${lead.internationalPhone.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
+                        (lead.aiDiagnosis as any)?.whatsappHook ||
+                          `¡Hola ${lead.businessName}! 👋 Somos VERTEX, realizamos una auditoría de su presencia digital y encontramos oportunidades para aumentar sus clientes. ¿Le gustaría ver el informe?`
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Enviar Propuesta por WhatsApp"
+                      className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/20 transition-all hover:scale-105"
+                    >
+                      <MessageSquare className="w-3.5 h-3.5" />
+                    </a>
+                  )}
+
+                  {lead.detectedEmails && lead.detectedEmails.length > 0 && (
+                    <a
+                      href={`mailto:${lead.detectedEmails[0]}?subject=${encodeURIComponent(
+                        (lead.aiDiagnosis as any)?.outreachEmail?.subject ||
+                          `${lead.businessName}: Diagnóstico y Oportunidad Digital`
+                      )}&body=${encodeURIComponent(
+                        (lead.aiDiagnosis as any)?.outreachEmail?.body ||
+                          `Hola equipo de ${lead.businessName},\n\nRealizamos una auditoría de su negocio y encontramos áreas de oportunidad...`
+                      )}`}
+                      title="Enviar Propuesta por Correo"
+                      className="p-1.5 rounded-lg bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 border border-blue-500/20 transition-all hover:scale-105"
+                    >
+                      <Mail className="w-3.5 h-3.5" />
+                    </a>
+                  )}
+
+                  <button
+                    onClick={() => onSelectLead(lead)}
+                    className="btn-accent text-xs px-2.5 py-1.5 font-medium inline-flex items-center gap-1.5"
+                    title="Ver Detalle y Propuesta Completa"
+                  >
+                    <Sparkles className="w-3 h-3" />
+                    <span className="hidden sm:inline">Propuesta</span>
+                  </button>
+                </div>
               </td>
             </tr>
           ))}

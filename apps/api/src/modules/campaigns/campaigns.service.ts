@@ -29,6 +29,7 @@ export class CampaignsService {
       const places = await this.googlePlaces.textSearch(
         `${data.queryTerm} en ${data.location}`,
         data.radiusMeters,
+        50,
       );
 
       // Enqueue discovery job to process places into leads

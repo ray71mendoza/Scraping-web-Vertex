@@ -164,8 +164,33 @@ export function createEnrichmentWorker(redisUrl?: string): Worker<EnrichmentJobD
           ...scores,
 
           // Status
-          status: 'QUALIFIED',
+          status: 'PROPOSAL_GENERATED',
           enrichedAt: new Date(),
+
+          // Tailored proposal based on detected digital gaps
+          aiDiagnosis: {
+            digitalGapAnalysis: `${businessName} presenta las siguientes falencias detectadas en su presencia web: ${
+              [
+                !sslResult.hasValidSsl ? 'Sitio web inseguro (sin SSL HTTPS)' : null,
+                !scrapedData.isResponsive ? 'Web no optimizada para celulares' : null,
+                !scrapedData.hasWhatsApp ? 'Sin canal directo de WhatsApp' : null,
+                !scrapedData.socialLinks.facebook && !scrapedData.socialLinks.instagram ? 'Presencia nula en redes sociales' : null,
+                scrapedData.emails.length === 0 ? 'Sin correos de contacto corporativos visibles' : null,
+              ]
+                .filter(Boolean)
+                .join(', ') || 'Falta de automatizaciones comerciales y embudo de conversión digital'
+            }.`,
+            highImpactServices: [
+              !sslResult.hasValidSsl ? 'Seguridad Web SSL HTTPS y Optimización' : 'Rediseño Web UX de Alta Conversión',
+              !scrapedData.hasWhatsApp ? 'Integración de WhatsApp Comercial y Agendador' : 'Estrategia de Captación Digital',
+              'Posicionamiento SEO Local en Google Maps',
+            ],
+            outreachEmail: {
+              subject: `${businessName}: Oportunidad de optimización web y captación de clientes`,
+              body: `Estimado equipo de ${businessName},\n\nRealizamos una auditoría técnica de su presencia digital (${websiteUrl}) y encontramos áreas críticas de oportunidad para incrementar sus ventas y consultas.\n\nEn VERTEX modernizamos plataformas digitales y automatizamos canales de atención comercial.\n\n¿Tendrían disponibilidad de 10 minutos esta semana para una breve llamada demostrativa?\n\nSaludos cordiales,\nEquipo VERTEX`,
+            },
+            whatsappHook: `¡Hola ${businessName}! 👋 Analizamos su sitio web (${websiteUrl}) y vimos oportunidades clave para captar más clientes y optimizar su conversión online. ¿Le interesaría revisar el informe gratuito en 2 minutos? 📊`,
+          } as any,
 
           // Raw data (JSONB for now, MongoDB in Phase 2)
           rawScrapedData: {

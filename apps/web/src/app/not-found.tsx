@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
 import { Compass, Home, ArrowLeft, Sparkles, Search } from "lucide-react";

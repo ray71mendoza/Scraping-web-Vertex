@@ -21,7 +21,7 @@ export default function NewProspectingPage() {
 
   const [selectedCategory, setSelectedCategory] = useState<string>("veterinarias");
   const [customTerm, setCustomTerm] = useState<string>("");
-  const [location, setLocation] = useState<string>("Bogotá, Colombia");
+  const [location, setLocation] = useState<string>("Cartagena, Colombia");
   const [radiusKm, setRadiusKm] = useState<number>(10);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -134,9 +134,35 @@ export default function NewProspectingPage() {
                   required
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  placeholder="Ej: Bogotá, Medellín, Ciudad de México, Madrid..."
+                  placeholder="Ej: Cartagena, Colombia | Bogotá, Colombia | Ciudad de México..."
                   className="w-full bg-[#08080d] border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white placeholder:text-gray-400 focus:outline-none focus:border-indigo-500 transition-colors"
                 />
+                {/* Quick City Presets */}
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {[
+                    "Cartagena, Colombia",
+                    "Barranquilla, Colombia",
+                    "Bogotá, Colombia",
+                    "Medellín, Colombia",
+                    "Cali, Colombia",
+                    "Ciudad de México",
+                    "Miami, EE.UU."
+                  ].map((city) => (
+                    <button
+                      key={city}
+                      type="button"
+                      onClick={() => setLocation(city)}
+                      className={cn(
+                        "text-[11px] px-2.5 py-1 rounded-lg border transition-all",
+                        location === city
+                          ? "bg-indigo-600/20 text-indigo-300 border-indigo-500/40"
+                          : "bg-white/[0.02] text-gray-400 border-white/5 hover:border-white/15 hover:text-white"
+                      )}
+                    >
+                      {city}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               <div>
