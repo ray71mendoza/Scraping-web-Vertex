@@ -88,12 +88,12 @@ export class CampaignsService {
       },
     });
 
-    const byTier = { VERY_HIGH: 0, HIGH: 0, MEDIUM: 0, LOW: 0 };
+    const byTier: Record<string, number> = { VERY_HIGH: 0, HIGH: 0, MEDIUM: 0, LOW: 0 };
     const byStatus: Record<string, number> = {};
     let totalScore = 0;
 
     for (const lead of leads) {
-      byTier[lead.opportunityTier]++;
+      byTier[lead.opportunityTier] = (byTier[lead.opportunityTier] || 0) + 1;
       byStatus[lead.status] = (byStatus[lead.status] || 0) + 1;
       totalScore += lead.opportunityScore;
     }

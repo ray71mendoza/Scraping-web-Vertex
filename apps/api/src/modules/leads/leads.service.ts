@@ -26,7 +26,7 @@ export class LeadsService {
       limit = 20,
     } = filters;
 
-    const where: Prisma.LeadWhereInput = {};
+    const where: any = {};
     if (campaignId) where.campaignId = campaignId;
     if (organizationId) where.organizationId = organizationId;
     if (status) where.status = status as any;
@@ -35,10 +35,10 @@ export class LeadsService {
       where.businessName = { contains: search, mode: 'insensitive' };
     }
 
-    const orderBy: Prisma.LeadOrderByWithRelationInput = {};
+    const orderBy: any = {};
     const validSortFields = ['opportunityScore', 'digitalScore', 'businessName', 'createdAt', 'googleRating'];
     if (validSortFields.includes(sortBy)) {
-      (orderBy as any)[sortBy] = sortOrder;
+      orderBy[sortBy] = sortOrder;
     }
 
     const skip = (page - 1) * limit;
@@ -99,8 +99,8 @@ export class LeadsService {
       _count: true,
     });
 
-    return leads.reduce(
-      (acc, item) => {
+    return (leads as any[]).reduce(
+      (acc: Record<string, number>, item: any) => {
         acc[item.status] = item._count;
         return acc;
       },
