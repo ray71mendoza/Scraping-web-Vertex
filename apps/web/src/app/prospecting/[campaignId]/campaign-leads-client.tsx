@@ -20,13 +20,29 @@ import {
   Sparkles,
   RefreshCw,
   Download,
+  Trash2,
+  Plus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { exportLeadsToCsv } from "@/lib/export-csv";
+import Link from "next/link";
 
 export default function CampaignLeadsClient() {
   const params = useParams();
-  const campaignId = (params?.campaignId as string) || "default";
+  const rawParam = (params?.campaignId as string) || "default";
+  const [campaignId, setCampaignId] = useState<string>(rawParam);
+
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      const parts = window.location.pathname.split("/").filter(Boolean);
+      const last = parts[parts.length - 1];
+      if (last && last !== "prospecting" && last !== "default") {
+        setCampaignId(last);
+      } else if (rawParam && rawParam !== "default") {
+        setCampaignId(rawParam);
+      }
+    }
+  }, [rawParam]);
 
   const [viewMode, setViewMode] = useState<"table" | "kanban">("table");
   const [selectedTier, setSelectedTier] = useState<string>("ALL");
@@ -34,6 +50,15 @@ export default function CampaignLeadsClient() {
   const [sortBy, setSortBy] = useState<"opportunityScore" | "businessName" | "googleRating">("opportunityScore");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [activeLead, setActiveLead] = useState<Lead | null>(null);
+
+  const handleClearDatabase = async () => {
+    const confirmClear = window.confirm(
+      "¿Deseas limpiar todas las búsquedas anteriores para comenzar una prospección completamente limpia?"
+    );
+    if (!confirmClear) return;
+    await api.clearAllData();
+    window.location.href = "/prospecting/new";
+  };
 
   // Fetch campaign info
   const { data: campaign } = useQuery({
@@ -204,10 +229,27 @@ export default function CampaignLeadsClient() {
             <button
               onClick={() => refetch()}
               className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors border border-white/5"
-              title="Refrescar leads"
+              title="Refrescar prospectos"
             >
               <RefreshCw className="w-4 h-4" />
             </button>
+
+            <button
+              onClick={handleClearDatabase}
+              className="px-3 py-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-300 hover:text-red-200 transition-colors border border-red-500/30 text-xs font-semibold flex items-center gap-1.5"
+              title="Limpiar todas las búsquedas y prospectos almacenados"
+            >
+              <Trash2 className="w-3.5 h-3.5 text-red-400" />
+              <span className="hidden sm:inline">Limpiar Base de Datos</span>
+            </button>
+
+            <Link
+              href="/prospecting/new"
+              className="btn-accent text-xs px-3.5 py-1.5 font-semibold flex items-center gap-1.5 shadow-md shadow-indigo-600/20"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Nueva Búsqueda</span>
+            </Link>
           </div>
         </div>
 

@@ -196,18 +196,16 @@ export default function NewProspectingPage() {
           {/* Bottom Launch Bar */}
           <div className="p-6 rounded-3xl bg-gradient-to-r from-[#0c0c14] to-indigo-950/40 border border-indigo-500/20 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xl">
             <div className="flex items-center gap-3">
-              <div className="p-3 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
-                <Coins className="w-5 h-5" />
+              <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                <Sparkles className="w-5 h-5" />
               </div>
               <div>
                 <div className="text-xs font-bold text-white flex items-center gap-1.5">
-                  <span>Costo Estimado: ~{estimatedCredits} créditos</span>
-                  <span className="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1.5 py-0.5 rounded font-bold">
-                    980 disponibles
-                  </span>
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>Modo Búsqueda Ilimitada VERTEX SAS</span>
                 </div>
                 <p className="text-[11px] text-gray-400 mt-0.5">
-                  Incluye llamada a Google Places API (New) con FieldMask optimizado y cola de auditoría.
+                  Descubre 50 prospectos locales por búsqueda con auditoría digital, WhatsApp directo y propuesta comercial generada.
                 </p>
               </div>
             </div>

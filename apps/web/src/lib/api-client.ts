@@ -14,7 +14,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/a
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 60000,
+  timeout: 3000,
   headers: {
     "Content-Type": "application/json",
   },
@@ -134,5 +134,16 @@ export const api = {
     } catch {
       return mockStore.getQuota();
     }
+  },
+
+  // Database Management
+  clearAllData: async (): Promise<{ success: boolean; message: string }> => {
+    try {
+      await apiClient.post(`/campaigns/clear`);
+    } catch {
+      // offline / mock fallback
+    }
+    mockStore.clearAllData();
+    return { success: true, message: "Base de datos y búsquedas limpiadas con éxito." };
   },
 };

@@ -27,17 +27,11 @@ export function Header({ title = "Dashboard", subtitle }: HeaderProps) {
       </div>
 
       <div className="flex items-center gap-4">
-        {/* Credits Pill */}
-        <Link
-          href="/settings"
-          className="flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 text-indigo-300 text-xs font-semibold transition-colors"
-          title="Ver consumo de cuota e integraciones"
-        >
-          <Coins className="w-3.5 h-3.5 text-indigo-400" />
-          <span>
-            {isLoading ? "..." : `${quota?.remaining ?? 980} créditos`}
-          </span>
-        </Link>
+        {/* Vertex Unlimited Status */}
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-semibold">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span>Búsquedas Ilimitadas</span>
+        </div>
 
         {/* New Search CTA */}
         <Link

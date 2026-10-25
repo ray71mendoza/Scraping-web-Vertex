@@ -294,30 +294,40 @@ export function LeadDetailModal({
                   <span>{copied ? "Copiado" : "Copiar Texto"}</span>
                 </button>
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   {lead.internationalPhone && (
                     <a
                       href={whatsappUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-emerald-600/20 transition-all"
+                      className="px-3.5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-emerald-600/20 transition-all"
                     >
                       <MessageCircle className="w-4 h-4" />
-                      <span>Abrir WhatsApp Web</span>
+                      <span>Enviar WhatsApp</span>
+                    </a>
+                  )}
+
+                  {lead.detectedEmails?.[0] && (
+                    <a
+                      href={`mailto:${lead.detectedEmails[0]}?subject=${encodeURIComponent(proposal.outreachEmail.subject)}&body=${encodeURIComponent(proposal.outreachEmail.body)}`}
+                      className="px-3.5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-blue-600/20 transition-all"
+                    >
+                      <Mail className="w-4 h-4" />
+                      <span>Abrir Correo</span>
                     </a>
                   )}
 
                   <button
                     onClick={handleSendEmail}
                     disabled={isSendingEmail}
-                    className="btn-accent text-xs font-bold py-2.5 px-5"
+                    className="btn-accent text-xs font-bold py-2.5 px-4"
                   >
                     {isSendingEmail ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
                     ) : (
                       <Send className="w-4 h-4" />
                     )}
-                    <span>Disparar Email</span>
+                    <span>Enviar con Resend</span>
                   </button>
                 </div>
               </div>

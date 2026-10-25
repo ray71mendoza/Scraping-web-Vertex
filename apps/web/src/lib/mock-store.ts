@@ -206,19 +206,18 @@ class MockStore {
 
   getCampaignById(id: string): SearchCampaign {
     const found = this.campaigns.find((c) => c.id === id);
-    if (!found) {
-      return {
-        id,
-        organizationId: "00000000-0000-0000-0000-000000000001",
-        queryTerm: "Prospección Local",
-        location: "Colombia",
-        radiusMeters: 10000,
-        totalFound: 5,
-        status: "COMPLETED",
-        createdAt: new Date(),
-      };
-    }
-    return found;
+    if (found) return found;
+    if (this.campaigns.length > 0) return this.campaigns[0];
+    return {
+      id: id || "camp_default",
+      organizationId: "00000000-0000-0000-0000-000000000001",
+      queryTerm: "Prospección Comercial VERTEX",
+      location: "Cartagena, Colombia",
+      radiusMeters: 10000,
+      totalFound: 50,
+      status: "COMPLETED",
+      createdAt: new Date(),
+    };
   }
 
   createCampaign(dto: CreateCampaignDto): SearchCampaign & { placesFound: number } {
@@ -272,24 +271,25 @@ class MockStore {
           : OpportunityLevel.LOW;
 
       const falencias: string[] = [];
-      if (!hasWeb) falencias.push("Sin presencia web ni catálogo digital");
-      if (hasWeb && !hasSsl) falencias.push("Sitio web inseguro (sin certificado SSL HTTPS)");
-      if (!hasWa) falencias.push("Sin canal directo de atención vía WhatsApp");
-      if (!hasIg && !hasFb) falencias.push("Presencia nula en redes sociales");
-      if (falencias.length === 0) falencias.push("Falta de sistema automatizado de citas y captación de clientes");
+      if (!hasWeb) falencias.push("Sin página web corporativa ni catálogo digital activo");
+      if (hasWeb && !hasSsl) falencias.push("Sitio web inseguro (alerta roja de navegador sin SSL HTTPS)");
+      if (!hasWa) falencias.push("Sin canal de atención inmediata por WhatsApp comercial");
+      if (!hasIg && !hasFb) falencias.push("Presencia digital nula en redes sociales (Instagram/Facebook)");
+      if (falencias.length === 0) falencias.push("Falta de sistema automatizado de citas, CRM y captación de prospectos 24/7");
 
       const diagnosis: AIDiagnosis = {
-        digitalGapAnalysis: `${name} en ${dto.location} presenta brechas digitales críticas: ${falencias.join(", ")}. Esto ocasiona pérdida recurrente de clientes potenciales que buscan servicios locales online.`,
+        digitalGapAnalysis: `${name} en ${dto.location} presenta brechas digitales críticas: ${falencias.join(", ")}. Esto provoca que decenas de clientes potenciales en ${dto.location} terminen contratando a la competencia directa.`,
         highImpactServices: [
-          hasWeb ? "Rediseño Web de Alta Conversión con SSL" : "Desarrollo de Sitio Web Corporativo + SEO Local",
-          "Automatización de Ventas y Citas por WhatsApp 24/7",
-          "Estrategia de Captación y Posicionamiento en Google Maps",
+          hasWeb ? "Rediseño Web de Alta Conversión con SSL HTTPS y Dominio Propio" : "Desarrollo de Software Web a la Medida + Posicionamiento SEO Local",
+          "Automatización Comercial y Agendamiento 24/7 por WhatsApp",
+          "Implementación de VERTEX CRM PRO para Acelerar Ventas y Gestión de Clientes",
+          "Producción Audiovisual y Contenido Publicitario de Alto Impacto"
         ],
         outreachEmail: {
-          subject: `${name}: Oportunidad de modernización digital en ${dto.location}`,
-          body: `Estimado equipo de ${name},\n\nRevisamos su presencia comercial en ${dto.location} y detectamos puntos de mejora cruciales: ${falencias.join("; ")}.\n\nEn VERTEX ayudamos a negocios de ${dto.queryTerm} a implementar tecnología web segura y sistemas automáticos de captación que incrementan consultas y ventas.\n\n¿Tienen 10 minutos esta semana para una breve videollamada demostrativa sin costo?\n\nSaludos atentos,\nEquipo VERTEX`,
+          subject: `${name}: Oportunidad de modernización comercial en ${dto.location} — VERTEX`,
+          body: `Estimado equipo directivo de ${name},\n\nLe saluda el equipo de VERTEX (https://vertexcorp.com.co/es), empresa de tecnología, software e inteligencia artificial en Colombia (Bogotá y Cartagena).\n\nRealizamos un diagnóstico de la presencia digital de su negocio en ${dto.location} y encontramos oportunidades inmediatas de crecimiento: ${falencias.join("; ")}.\n\nEn VERTEX desarrollamos software a la medida, automatizaciones comerciales de WhatsApp y plataformas SaaS como VERTEX CRM PRO, logrando duplicar el contacto de clientes para empresas del sector ${dto.queryTerm}.\n\n¿Disponen de 10 minutos esta semana para una breve demostración sin compromiso?\n\nAtentamente,\nEquipo Comercial VERTEX SAS\nWeb: https://vertexcorp.com.co/es\nEmail: gerenciavertexsas@gmail.com\nLíneas de atención: +57 300 865 8910 / +57 312 491 6281`,
         },
-        whatsappHook: `¡Hola ${name}! 👋 Vimos su negocio en ${dto.location}. Detectamos oportunidades clave para aumentar sus clientes online mejorando ${falencias[0].toLowerCase()}. ¿Le gustaría ver una propuesta personalizada de 2 minutos? 🚀`,
+        whatsappHook: `¡Hola equipo de ${name}! 👋 Les escribe el equipo de VERTEX Tecnología (vertexcorp.com.co). Analizamos su presencia comercial en ${dto.location} y diseñamos una solución para solucionar ${falencias[0].toLowerCase()} y activarles captación automática de clientes 24/7 por WhatsApp. ¿Les gustaría conocer una propuesta personalizada de 2 minutos? 🚀`,
       };
 
       generatedLeads.push({
@@ -311,7 +311,7 @@ class MockStore {
         hasWhatsapp: hasWa,
         hasTiktok: false,
         detectedEmails: [`contacto@${cleanSlug}.com`, `gerencia@${cleanSlug}.com`],
-        detectedCms: hasWeb ? (idx % 2 === 0 ? "WordPress" : "Shopify") : null,
+        detectedCms: hasWeb ? (idx % 2 === 0 ? "WordPress" : "Custom React/Node") : null,
         digitalScore,
         opportunityScore: oppScore,
         opportunityTier: oppTier,
@@ -323,17 +323,37 @@ class MockStore {
     }
 
     this.leads.unshift(...generatedLeads);
-    this.quota.used += count;
-    this.quota.remaining = Math.max(0, this.quota.limit - this.quota.used);
     this.save();
 
     return { ...newCampaign, placesFound: count };
   }
 
+  clearAllData(): void {
+    this.campaigns = [];
+    this.leads = [];
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.removeItem("vertex_mock_campaigns");
+        localStorage.removeItem("vertex_mock_leads");
+      } catch (e) {
+        console.warn("Storage error", e);
+      }
+    }
+  }
+
   getLeads(filters: LeadListFilters): LeadListResponse {
     let list = this.leads;
-    if (filters.campaignId) {
-      list = list.filter((l) => l.campaignId === filters.campaignId);
+    if (filters.campaignId && filters.campaignId !== "ALL") {
+      const filtered = list.filter((l) => l.campaignId === filters.campaignId);
+      if (filtered.length > 0) {
+        list = filtered;
+      } else if (this.campaigns.length > 0) {
+        const fallbackId = this.campaigns[0].id;
+        const fallbackLeads = list.filter((l) => l.campaignId === fallbackId);
+        if (fallbackLeads.length > 0) {
+          list = fallbackLeads;
+        }
+      }
     }
     if (filters.opportunityTier) {
       list = list.filter((l) => l.opportunityTier === filters.opportunityTier);
