@@ -229,8 +229,40 @@ export function LeadDetailModal({
                         <label className="text-[11px] font-bold text-gray-400 uppercase">
                           Cuerpo de la Propuesta
                         </label>
-                        <div className="mt-1 p-3 rounded-lg bg-[#08080d] border border-white/10 text-xs text-gray-200 whitespace-pre-line leading-relaxed h-44 overflow-y-auto">
+                        <div className="mt-1 p-3 rounded-lg bg-[#08080d] border border-white/10 text-xs text-gray-200 whitespace-pre-line leading-relaxed h-36 overflow-y-auto">
                           {proposal.outreachEmail?.body}
+                        </div>
+                      </div>
+
+                      {/* Ray Mendoza Signature Card Preview */}
+                      <div className="p-3.5 rounded-xl bg-white text-slate-800 border border-slate-200 flex items-center gap-4 shadow-sm">
+                        <div className="shrink-0">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src="/vertex-logo.png"
+                            alt="VERTEX"
+                            className="h-10 w-auto object-contain"
+                          />
+                        </div>
+                        <div className="h-12 w-[2px] bg-cyan-600/40 shrink-0" />
+                        <div className="space-y-0.5 min-w-0">
+                          <p className="text-xs font-bold text-slate-900 leading-tight">Ray Mendoza</p>
+                          <p className="text-[11px] text-cyan-600 font-semibold leading-tight">Director de Desarrollo</p>
+                          <p className="text-[10px] text-slate-700 font-bold tracking-wide uppercase leading-tight">
+                            VERTEX <span className="font-normal text-slate-400">|</span> Innovation &amp; Consulting
+                          </p>
+                          <div className="flex flex-wrap items-center gap-x-3 text-[10px] text-slate-600 pt-0.5">
+                            <span><strong className="text-cyan-700 font-black">E</strong> gerenciavertexsas@gmail.com</span>
+                            <span><strong className="text-cyan-700 font-black">T</strong> +57 300 865 8910</span>
+                            <a
+                              href="https://vertexcorp.com.co/es/proyectos"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-cyan-700 hover:underline font-semibold"
+                            >
+                              <strong className="text-cyan-700 font-black">W</strong> vertexcorp.com.co
+                            </a>
+                          </div>
                         </div>
                       </div>
                     </div>

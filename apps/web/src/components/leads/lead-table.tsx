@@ -188,7 +188,7 @@ export function LeadTable({
                           `${lead.businessName}: Propuesta de Crecimiento Digital — VERTEX SAS`
                       )}&body=${encodeURIComponent(
                         (lead.aiDiagnosis as any)?.outreachEmail?.body ||
-                          `Estimado equipo de ${lead.businessName},\n\nLe saluda el equipo de VERTEX SAS (https://vertexcorp.com.co/es)...`
+                          `Estimado equipo directivo de ${lead.businessName},\n\nLe saluda Ray Mendoza de VERTEX SAS (https://vertexcorp.com.co/es).\n\nLos invitamos a conocer algunos de los proyectos que hemos desarrollado recientemente en la sección Projects de nuestro sitio web:\nhttps://vertexcorp.com.co/es/proyectos\n\nSi consideran que esta oportunidad puede ser relevante para ${lead.businessName}, nos gustaría coordinar una breve conversación para conocer mejor sus necesidades y evaluar cómo podríamos desarrollar una solución adaptada a su negocio.\n\nCordialmente,\n\nRay Mendoza\nDirector de Desarrollo\nVERTEX | Innovation & Consulting\nE  gerenciavertexsas@gmail.com\nT  +57 300 865 8910\nW  vertexcorp.com.co`
                       )}`}
                       target="_blank"
                       rel="noopener noreferrer"
