@@ -267,10 +267,10 @@ export default function LeadDetailClient() {
                     <div>
                       <label className="text-[11px] font-bold text-gray-400 uppercase">Cuerpo de la Propuesta</label>
                       <textarea
-                        rows={10}
+                        rows={14}
                         value={emailBody}
                         onChange={(e) => setEmailBody(e.target.value)}
-                        className="mt-1 w-full p-3 rounded-xl bg-[#08080d] border border-white/10 text-xs text-gray-200 whitespace-pre-line leading-relaxed"
+                        className="mt-1 w-full p-3 rounded-xl bg-[#08080d] border border-white/10 text-xs text-gray-200 whitespace-pre-line leading-relaxed font-sans"
                       />
                     </div>
                   </div>
@@ -278,10 +278,10 @@ export default function LeadDetailClient() {
                   <div>
                     <label className="text-[11px] font-bold text-gray-400 uppercase">Mensaje para WhatsApp Comercial</label>
                     <textarea
-                      rows={8}
+                      rows={14}
                       value={whatsappBody}
                       onChange={(e) => setWhatsappBody(e.target.value)}
-                      className="mt-1 w-full p-3 rounded-xl bg-emerald-950/20 border border-emerald-500/20 text-xs text-emerald-100 whitespace-pre-line leading-relaxed"
+                      className="mt-1 w-full p-3 rounded-xl bg-emerald-950/20 border border-emerald-500/20 text-xs text-emerald-100 whitespace-pre-line leading-relaxed font-sans"
                     />
                   </div>
                 )}

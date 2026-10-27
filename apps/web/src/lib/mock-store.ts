@@ -545,7 +545,7 @@ class MockStore {
         role: "Director de Desarrollo",
         email: "gerenciavertexsas@gmail.com",
         phone: "+57 300 865 8910",
-        website: "https://vertexcorp.com.co",
+        website: "https://vertexcorp.com.co/es",
       },
       createdAt: new Date().toISOString(),
       status: "DRAFT",
@@ -599,7 +599,7 @@ class MockStore {
         role: "Director de Desarrollo",
         email: "gerenciavertexsas@gmail.com",
         phone: "+57 300 865 8910",
-        website: "https://vertexcorp.com.co",
+        website: "https://vertexcorp.com.co/es",
         logoUrl: "/vertex-logo.png",
       },
     };
@@ -714,20 +714,41 @@ Realizamos una auditoría exhaustiva sobre la presencia digital y canales comerc
 
 Si están interesados en implementar estas mejoras y optimizar el margen de rentabilidad de sus reservas, les invitamos a comunicarse respondiendo directamente a este correo para agendar una reunión donde les presentaremos la propuesta técnica y económica detallada.
 
+Para conocer más sobre nuestra empresa, trayectoria y explorar nuestro portafolio de servicios y casos de éxito, los invitamos a visitar nuestro sitio web oficial:
+👉 https://vertexcorp.com.co/es
+
 Atentamente,
 Ray Mendoza
 Director de Desarrollo | VERTEX Innovation & Consulting
 gerenciavertexsas@gmail.com | +57 300 865 8910
-https://vertexcorp.com.co`;
+Sitio Web Oficial: https://vertexcorp.com.co/es`;
 
       whatsappBody = `¡Hola equipo directivo de ${lead.businessName}! 🏨
-Realizamos una auditoría a su presencia digital y detectamos oportunidades críticas:
-• Falta de motor de reservas directas (dependencia de comisiones de OTAs).
-• Oportunidad de modernización en carga móvil y vinculación de redes sociales.
 
-En VERTEX implementamos sistemas de reserva directa sin comisiones y automatización de atención por WhatsApp.
+Somos *VERTEX Innovation & Consulting*, firma especializada en modernización tecnológica, desarrollo web de alto rendimiento y automatización de canales comerciales para el sector hotelero y turístico en Colombia.
 
-Si están interesados en evaluar la propuesta, pueden responder a este mensaje para agendar una reunión con nuestro equipo técnico. 📲`;
+Estuvimos realizando una auditoría técnica preliminar sobre los canales digitales y sistemas de reserva de ${lead.businessName}, identificando hallazgos prioritarios para optimizar sus ingresos:
+
+1. FALENCIAS DETECTADAS EN LA AUDITORÍA:
+• Ausencia de Motor de Reservas Directas: Sus potenciales huéspedes dependen de plataformas intermediarias (OTAs) que cobran entre el 15% y 25% de comisión por cada reserva.
+• Experiencia y Rendimiento Móvil: La navegación en smartphones presenta lentitud en la carga de fotografías y carece de confirmación instantánea.
+• Desvinculación de Canales Sociales: Sus perfiles en Instagram y Google Maps no cuentan con enlaces inteligentes sincronizados para reservar directamente por WhatsApp.
+
+2. SOLUCIONES RECOMENDADAS VERTEX:
+• Motor de Reservas Directas sin comisiones por transacción, integrado a su web con pasarela de pagos nacional e internacional.
+• Plataforma Web Ultrarrápida (carga en menos de 2 segundos) y diseño de alta conversión adaptado a viajeros y huéspedes.
+• Canal de WhatsApp Business automatizado con consulta de disponibilidad y atención comercial inmediata 24/7.
+
+Si están interesados en eliminar comisiones de intermediarios y modernizar estos aspectos, pueden responder directamente a este mensaje para agendar una reunión o presentación formal con nuestro equipo técnico.
+
+💡 Si tienen alguna duda o desean conocer más sobre nuestro trabajo y portafolio de servicios, pueden consultar nuestro sitio web oficial:
+👉 https://vertexcorp.com.co/es
+
+Atentamente,
+*Ray Mendoza* | Director de Desarrollo
+VERTEX Innovation & Consulting
+📱 +57 300 865 8910 | ✉️ gerenciavertexsas@gmail.com
+🌐 https://vertexcorp.com.co/es`;
 
     } else if (lead.sector === "RESTAURANTS") {
       emailSubject = `${lead.businessName}: Diagnóstico de presencia digital, menú interactivo y pedidos`;
@@ -747,18 +768,41 @@ Llevamos a cabo un análisis técnico y comercial sobre la presencia online de s
 
 Si están interesados en modernizar su canal de pedidos y agilizar la atención de sus comensales, pueden comunicarse respondiendo directamente a este correo para agendar una sesión de trabajo y presentarles la solución personalizada.
 
+Para conocer más sobre nuestra empresa, trayectoria y explorar nuestro portafolio de servicios y casos de éxito, los invitamos a visitar nuestro sitio web oficial:
+👉 https://vertexcorp.com.co/es
+
 Cordialmente,
 Ray Mendoza
 Director de Desarrollo | VERTEX Innovation & Consulting
 gerenciavertexsas@gmail.com | +57 300 865 8910
-https://vertexcorp.com.co`;
+Sitio Web Oficial: https://vertexcorp.com.co/es`;
 
       whatsappBody = `¡Hola equipo de ${lead.businessName}! 🍽️
-Analizamos su restaurante en Google Maps (${lead.googleRating?.toFixed(1) || "4.6"}★) y vimos cómo multiplicar sus pedidos directos:
-• Implementación de menú digital interactivo para celulares.
-• Enrutamiento automático de pedidos estructurados a su WhatsApp de ventas.
 
-Si desean conocer la propuesta para su restaurante, pueden responder a este mensaje para agendar una reunión con nuestro equipo. 🚀`;
+Somos *VERTEX Innovation & Consulting*, empresa colombiana especializada en desarrollo de software, menús digitales interactivos y automatización de pedidos para el sector gastronómico.
+
+Analizamos su presencia digital y destacamos su excelente reputación en Google Maps (${lead.googleRating?.toFixed(1) || "4.6"}★). Sin embargo, detectamos aspectos determinantes que están frenando la rentabilidad de sus pedidos:
+
+1. FALENCIAS DETECTADAS EN LA AUDITORÍA:
+• Falta de Menú Digital Interactivo: No cuentan con una carta digital optimizada para smartphones con fotos de alta resolución y selección ágil de platos.
+• Desconexión de Redes Sociales con Ventas: Su perfil de Instagram y ficha de Google no canalizan los pedidos hacia una línea comercial estructurada.
+• Fuga de Clientes en Horas Pico: La toma manual de pedidos genera demoras, saturación y pérdida de pedidos por tiempos de respuesta.
+
+2. SOLUCIONES RECOMENDADAS VERTEX:
+• Menú Digital Interactivo de Carga Instantánea con carrito y botón que despacha el pedido organizado directamente a su WhatsApp.
+• Conexión Inteligente de Redes Sociales (Instagram, TikTok y Google Maps) hacia su canal directo de pedidos sin pagar comisiones a plataformas externas.
+• Módulo de Reservas de Mesas Automatizado para fines de semana y fechas especiales.
+
+Si desean modernizar el canal de pedidos de su restaurante y atender a sus comensales sin intermediarios, pueden responder a este mensaje para agendar una reunión y presentarles la demostración interactiva.
+
+💡 Si tienen alguna duda o desean conocer más sobre nuestro trabajo y portafolio de servicios, pueden consultar nuestro sitio web oficial:
+👉 https://vertexcorp.com.co/es
+
+Cordialmente,
+*Ray Mendoza* | Director de Desarrollo
+VERTEX Innovation & Consulting
+📱 +57 300 865 8910 | ✉️ gerenciavertexsas@gmail.com
+🌐 https://vertexcorp.com.co/es`;
 
     } else if (lead.sector === "CLINICS") {
       emailSubject = `${lead.businessName}: Auditoría de seguridad web SSL y sistema de citas médicas`;
@@ -778,18 +822,41 @@ Realizamos una auditoría de infraestructura digital y seguridad sobre los canal
 
 Si están interesados en fortalecer la seguridad de su plataforma y automatizar la gestión de citas de su clínica, pueden comunicarse respondiendo a este mensaje para agendar una reunión técnica y revisar el plan de implementación.
 
+Para conocer más sobre nuestra empresa, trayectoria y explorar nuestro portafolio de servicios y casos de éxito, los invitamos a visitar nuestro sitio web oficial:
+👉 https://vertexcorp.com.co/es
+
 Atentamente,
 Ray Mendoza
 Director de Desarrollo | VERTEX Innovation & Consulting
 gerenciavertexsas@gmail.com | +57 300 865 8910
-https://vertexcorp.com.co`;
+Sitio Web Oficial: https://vertexcorp.com.co/es`;
 
-      whatsappBody = `¡Hola equipo de ${lead.businessName}! 🏥
-Auditamos su presencia online y detectamos oportunidades prioritarias en:
-• Certificación de seguridad SSL institucional para pacientes.
-• Agendador digital de citas médicas y turnos 24/7.
+      whatsappBody = `¡Hola equipo directivo de ${lead.businessName}! 🏥
 
-Si desean revisar las recomendaciones técnicas para su centro médico, por favor respondan a este mensaje para agendar una reunión formal. 📊`;
+Somos *VERTEX Innovation & Consulting*, firma de tecnología especializada en modernización web, seguridad digital y automatización de agendas para el sector salud y clínicas especializadas.
+
+Llevamos a cabo una auditoría sobre la infraestructura digital y canales de atención a pacientes de ${lead.businessName}, encontrando oportunidades determinantes para su servicio:
+
+1. FALENCIAS DETECTADAS EN LA AUDITORÍA:
+• Alerta de Seguridad SSL en Navegadores: El portal web no cuenta con certificado SSL robusto, mostrando advertencias de "Sitio no seguro" que generan desconfianza al ingresar datos personales.
+• Ausencia de Sistema de Citas Online 24/7: Los pacientes no pueden consultar disponibilidad de especialistas ni agendar citas fuera del horario de recepción telefónica.
+• Desconexión en Canales de Urgencias/Orientación: Falta de botón estructurado hacia WhatsApp para orientación rápida o confirmación de consultas.
+
+2. SOLUCIONES RECOMENDADAS VERTEX:
+• Blindaje de Seguridad y Certificado SSL/HTTPS de grado empresarial para proteger la privacidad de sus pacientes y cumplir normativas.
+• Agendador Digital de Citas Médicas 24/7 con recordatorios automatizados por WhatsApp para reducir el ausentismo y cancelaciones.
+• Portal Web Institucional Moderno con directorio médico por especialidad y canal prioritario de orientación.
+
+Si tienen interés en fortalecer la seguridad de su plataforma y sistematizar la asignación de citas, les invitamos a responder a este mensaje para coordinar una reunión formal de presentación técnica.
+
+💡 Si tienen alguna duda o desean conocer más sobre nuestro trabajo y portafolio de servicios, pueden consultar nuestro sitio web oficial:
+👉 https://vertexcorp.com.co/es
+
+Atentamente,
+*Ray Mendoza* | Director de Desarrollo
+VERTEX Innovation & Consulting
+📱 +57 300 865 8910 | ✉️ gerenciavertexsas@gmail.com
+🌐 https://vertexcorp.com.co/es`;
 
     } else if (lead.sector === "RETAIL") {
       emailSubject = `${lead.businessName}: Auditoría de navegación móvil, catálogo y conversión`;
@@ -809,18 +876,41 @@ Revisamos detalladamente su presencia digital, catálogo de productos y perfiles
 
 Si están interesados en corregir estas limitaciones de navegación y potenciar sus ventas digitales, pueden comunicarse respondiendo directamente a este correo para agendar una reunión donde les mostraremos el prototipo recomendado.
 
+Para conocer más sobre nuestra empresa, trayectoria y explorar nuestro portafolio de servicios y casos de éxito, los invitamos a visitar nuestro sitio web oficial:
+👉 https://vertexcorp.com.co/es
+
 Saludos cordiales,
 Ray Mendoza
 Director de Desarrollo | VERTEX Innovation & Consulting
 gerenciavertexsas@gmail.com | +57 300 865 8910
-https://vertexcorp.com.co`;
+Sitio Web Oficial: https://vertexcorp.com.co/es`;
 
       whatsappBody = `¡Hola equipo comercial de ${lead.businessName}! 🛍️
-Analizamos su tienda y encontramos puntos clave para optimizar su canal de ventas:
-• Adaptación móvil ultrarrápida del catálogo de productos.
-• Botón de compra inmediata que envía la orden directamente a su WhatsApp.
 
-Si están interesados en evaluar la propuesta, pueden responder a este mensaje para agendar una reunión con nuestro equipo. 📲`;
+Somos *VERTEX Innovation & Consulting*, empresa colombiana especializada en comercio electrónico, desarrollo web de alto rendimiento y automatización de ventas para marcas y boutiques de retail.
+
+Realizamos un análisis técnico y comercial detallado sobre su presencia digital, catálogo de productos y canales de atención (${lead.websiteUrl || "sus canales online"}), detectando áreas clave de optimización:
+
+1. FALENCIAS DETECTADAS EN LA AUDITORÍA:
+• Dificultades de Navegación en Teléfonos Móviles: La plataforma actual (desarrollada en subdominio/plantilla no optimizada) presenta lentitud en la carga de colecciones y elementos desalineados en smartphones, provocando abandono de compra.
+• Ausencia de Catálogo Digital Interactivo: Los clientes no pueden explorar colecciones organizadas por categorías, tallas o disponibilidad en tiempo real.
+• Desconexión entre Redes Sociales y Cierre Comercial: Su presencia en Instagram/Facebook no cuenta con enlaces directos para comprar de forma inmediata vía WhatsApp.
+
+2. SOLUCIONES RECOMENDADAS VERTEX:
+• Desarrollo de Catálogo Digital Ultrarrápido optimizado 100% para compras fluidas desde cualquier celular.
+• Botón de Compra Directa a WhatsApp: El cliente elige sus prendas preferidas y la orden se envía instantáneamente estructurada a su equipo de ventas.
+• Sincronización Estratégica con Instagram Shopping y Google Business para maximizar el tráfico comercial local.
+
+Si están interesados en modernizar la experiencia de compra de sus clientes y multiplicar sus ventas directas, pueden responder a este mensaje para agendar una reunión o demostración formal con nuestro equipo.
+
+💡 Si tienen alguna duda o desean conocer más sobre nuestro trabajo y portafolio de servicios, pueden consultar nuestro sitio web oficial:
+👉 https://vertexcorp.com.co/es
+
+Saludos cordiales,
+*Ray Mendoza* | Director de Desarrollo
+VERTEX Innovation & Consulting
+📱 +57 300 865 8910 | ✉️ gerenciavertexsas@gmail.com
+🌐 https://vertexcorp.com.co/es`;
 
     } else {
       emailSubject = `${lead.businessName}: Diagnóstico de presencia digital, sitio web y captación`;
@@ -840,18 +930,41 @@ Realizamos un análisis técnico y comercial sobre la presencia digital de su em
 
 Si están interesados en modernizar estos aspectos y evaluar la implementación de estas soluciones, pueden comunicarse respondiendo directamente a este correo para agendar una reunión técnica y comercial.
 
+Para conocer más sobre nuestra empresa, trayectoria y explorar nuestro portafolio de servicios y casos de éxito, los invitamos a visitar nuestro sitio web oficial:
+👉 https://vertexcorp.com.co/es
+
 Atentamente,
 Ray Mendoza
 Director de Desarrollo | VERTEX Innovation & Consulting
 gerenciavertexsas@gmail.com | +57 300 865 8910
-https://vertexcorp.com.co`;
+Sitio Web Oficial: https://vertexcorp.com.co/es`;
 
-      whatsappBody = `¡Hola equipo de ${lead.businessName}! 👋
-Analizamos su presencia digital en Google y vimos oportunidades clave para aumentar sus clientes:
-• Modernización de sitio web corporativo de alta conversión.
-• Canal directo de WhatsApp para cierre comercial inmediato.
+      whatsappBody = `¡Hola equipo directivo de ${lead.businessName}! 👋
 
-Si desean conocer la propuesta técnica detallada, respondan a este mensaje para agendar una reunión formal con nosotros. 🚀`;
+Somos *VERTEX Innovation & Consulting*, firma especializada en ingeniería de software, desarrollo de portales corporativos de alta conversión y automatización de procesos comerciales para empresas en Colombia.
+
+Realizamos una auditoría técnica sobre la visibilidad digital y canales comerciales de su empresa en el mercado local, identificando hallazgos prioritarios:
+
+1. FALENCIAS DETECTADAS EN LA AUDITORÍA:
+• ${!lead.hasWebsite ? "Ausencia de Sitio Web Corporativo Oficial: Su empresa no cuenta con un portal institucional propio indexado en Google, lo que desvía clientes potenciales hacia competidores de su sector." : "Portal Web No Adaptado a Estándares Modernos: Su sitio actual presenta tiempos de carga elevados, falta de visualización responsiva en smartphones y protocolos desactualizados."}
+• Canales Comerciales Desarticulados: No disponen de una línea directa sincronizada en WhatsApp ni formularios de captación rápida para responder cotizaciones en minutos.
+• Presencia Digital Incompleta: Falta de vinculación estratégica entre perfiles comerciales y su catálogo de servicios.
+
+2. SOLUCIONES RECOMENDADAS VERTEX:
+• Desarrollo de Sitio Web Corporativo de Alta Velocidad con dominio propio, diseño premium y posicionamiento local en Google.
+• Implementación de Canal Comercial Automatizado en WhatsApp Business para atención inmediata de prospectos.
+• Auditoría de Marca e Infraestructura Digital para proyectar máxima solidez y confianza empresarial.
+
+Si están interesados en evaluar nuestra propuesta técnica y modernizar la presencia digital de su empresa, pueden responder directamente a este mensaje para agendar una reunión formal con nuestro equipo.
+
+💡 Si tienen alguna duda o desean conocer más sobre nuestro trabajo y portafolio de servicios, pueden consultar nuestro sitio web oficial:
+👉 https://vertexcorp.com.co/es
+
+Atentamente,
+*Ray Mendoza* | Director de Desarrollo
+VERTEX Innovation & Consulting
+📱 +57 300 865 8910 | ✉️ gerenciavertexsas@gmail.com
+🌐 https://vertexcorp.com.co/es`;
     }
 
     const email: OutreachDraftDto = {

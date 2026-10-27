@@ -201,14 +201,42 @@ En VERTEX desarrollamos plataformas web modernas, veloces y diseñadas específi
 
 Si están interesados en captar estas búsquedas y modernizar su infraestructura digital, pueden comunicarse respondiendo directamente a este correo para agendar una reunión formal y presentarles la propuesta comercial detallada.
 
+Para conocer más sobre nuestra empresa, trayectoria y explorar nuestro portafolio de servicios y casos de éxito, los invitamos a visitar nuestro sitio web oficial:
+👉 https://vertexcorp.com.co/es
+
 Atentamente,
 Ray Mendoza
 Director de Desarrollo | VERTEX Innovation & Consulting
 gerenciavertexsas@gmail.com | +57 300 865 8910
-https://vertexcorp.com.co`;
+Sitio Web Oficial: https://vertexcorp.com.co/es`;
 
-      whatsappBody = `¡Hola equipo de ${lead.businessName}! 👋
-Analizamos su presencia en Google Maps (${lead.googleRating?.toFixed(1) || '4.0'}★) y vimos cómo captar más clientes implementando su portal web y canal de ventas. Si desean revisar la propuesta, respondan a este mensaje para agendar una reunión con nuestro equipo técnico. 📲`;
+      whatsappBody = `¡Hola equipo directivo de ${lead.businessName}! 👋
+
+Somos *VERTEX Innovation & Consulting*, firma especializada en ingeniería de software, modernización web de alto rendimiento y automatización de canales comerciales para empresas en Colombia.
+
+Estuvimos realizando una auditoría preliminar a su presencia comercial en Google Maps (${lead.googleRating?.toFixed(1) || '4.0'}★) y detectamos oportunidades críticas que están afectando la captación directa de clientes:
+
+1. FALENCIAS DETECTADAS EN LA AUDITORÍA:
+• Ausencia de Sitio Web Oficial: Su empresa no cuenta con un portal institucional propio indexado en Google, provocando que potenciales clientes migren hacia competidores.
+• Falta de Canal de Conversión Directo: No disponen de flujo estructurado para cotizaciones y atención inmediata en WhatsApp Business.
+• Oportunidad de Posicionamiento Local: Su ficha en Google puede conectarse con catálogos y sistemas de agendamiento para multiplicar consultas.
+
+2. SOLUCIONES RECOMENDADAS VERTEX:
+• Desarrollo de Sitio Web Corporativo Ultrarrápido con dominio propio y diseño de alta conversión para móviles.
+• Integración de Canal Comercial en WhatsApp para cierre rápido de prospectos.
+• Auditoría y Optimización de Presencia Digital en motores de búsqueda.
+
+Si están interesados en captar más clientes y evaluar nuestra propuesta técnica, pueden responder directamente a este mensaje para agendar una reunión formal con nuestro equipo.
+
+💡 Si tienen alguna duda o desean conocer más sobre nuestro trabajo y portafolio de servicios, pueden consultar nuestro sitio web oficial:
+👉 https://vertexcorp.com.co/es
+
+Atentamente,
+*Ray Mendoza* | Director de Desarrollo
+VERTEX Innovation & Consulting
+📱 +57 300 865 8910 | ✉️ gerenciavertexsas@gmail.com
+🌐 https://vertexcorp.com.co/es`;
+
     } else if (hasMobileIssue || hasSslIssue) {
       serviceCodes.push(hasMobileIssue ? 'WEB_DEV_REDESIGN' : 'SEC_SSL_INFRA');
       emailSubject = `${lead.businessName}: Oportunidad de optimización técnica y seguridad web`;
@@ -221,14 +249,40 @@ En VERTEX modernizamos plataformas web existentes garantizando carga instantáne
 
 Si están interesados en corregir estas falencias y elevar la conversión de su portal, pueden comunicarse respondiendo a este mensaje para agendar una reunión técnica.
 
+Para conocer más sobre nuestra empresa, trayectoria y explorar nuestro portafolio de servicios y casos de éxito, los invitamos a visitar nuestro sitio web oficial:
+👉 https://vertexcorp.com.co/es
+
 Cordialmente,
 Ray Mendoza
 Director de Desarrollo | VERTEX Innovation & Consulting
 gerenciavertexsas@gmail.com | +57 300 865 8910
-https://vertexcorp.com.co`;
+Sitio Web Oficial: https://vertexcorp.com.co/es`;
 
-      whatsappBody = `¡Hola ${lead.businessName}! 👋
-Realizamos una auditoría técnica a su sitio web (${lead.websiteUrl}) y vimos oportunidades clave en seguridad y experiencia móvil. Si les interesa evaluar las soluciones, pueden responder a este mensaje para agendar una reunión formal. 📊`;
+      whatsappBody = `¡Hola equipo de ${lead.businessName}! 👋
+
+Somos *VERTEX Innovation & Consulting*, empresa especializada en modernización web, seguridad digital y automatización de procesos para negocios en Colombia.
+
+Realizamos una auditoría técnica sobre su portal web (${lead.websiteUrl}) y detectamos hallazgos prioritarios para optimizar su conversión:
+
+1. FALENCIAS DETECTADAS EN LA AUDITORÍA:
+${hasMobileIssue ? '• Navegación Móvil No Adaptada: El portal presenta lentitud y elementos desalineados en smartphones, provocando pérdida de visitantes.\n' : ''}${hasSslIssue ? '• Advertencia de Certificado SSL: Navegadores indican "No es seguro", generando desconfianza en los usuarios.\n' : ''}• Desconexión con Canales de Cierre: Ausencia de botón estructurado que conecte la navegación web directamente con WhatsApp comercial.
+
+2. SOLUCIONES RECOMENDADAS VERTEX:
+• Modernización y Optimización Móvil Completa (velocidad de carga inferior a 2 segundos).
+• Blindaje de Seguridad y Certificación SSL de grado empresarial.
+• Integración de Canal Directo a WhatsApp Business para cerrar ventas inmediatamente.
+
+Si desean modernizar estos aspectos y evaluar nuestra propuesta técnica, pueden responder a este mensaje para agendar una reunión con nuestro equipo.
+
+💡 Si tienen alguna duda o desean conocer más sobre nuestro trabajo y portafolio de servicios, pueden consultar nuestro sitio web oficial:
+👉 https://vertexcorp.com.co/es
+
+Cordialmente,
+*Ray Mendoza* | Director de Desarrollo
+VERTEX Innovation & Consulting
+📱 +57 300 865 8910 | ✉️ gerenciavertexsas@gmail.com
+🌐 https://vertexcorp.com.co/es`;
+
     } else {
       serviceCodes.push('AUTOMATION_WHATSAPP_CRM', 'SEO_LOCAL_TECH');
       emailSubject = `${lead.businessName}: Optimización de conversión comercial y canal WhatsApp`;
@@ -240,16 +294,41 @@ En VERTEX conectamos sitios web con flujos de atención comercial inmediata que 
 
 Si están interesados en evaluar cómo implementar esta automatización, los invitamos a responder directamente a este correo para agendar una sesión de trabajo.
 
+Para conocer más sobre nuestra empresa, trayectoria y explorar nuestro portafolio de servicios y casos de éxito, los invitamos a visitar nuestro sitio web oficial:
+👉 https://vertexcorp.com.co/es
+
 Saludos cordiales,
 Ray Mendoza
 Director de Desarrollo | VERTEX Innovation & Consulting
 gerenciavertexsas@gmail.com | +57 300 865 8910
-https://vertexcorp.com.co`;
+Sitio Web Oficial: https://vertexcorp.com.co/es`;
 
-      whatsappBody = `¡Hola ${lead.businessName}! 👋
-Vimos su sitio web y excelente presencia local. En VERTEX ayudamos a empresas como la suya a integrar canales de WhatsApp automatizados y motores de agendamiento para multiplicar consultas de ventas.
+      whatsappBody = `¡Hola equipo de ${lead.businessName}! 👋
 
-¿Podemos enviarles un breve caso de éxito de 2 minutos? 🚀`;
+Somos *VERTEX Innovation & Consulting*, firma de tecnología especializada en desarrollo de software, modernización digital y automatización de canales de atención y ventas en Colombia.
+
+Revisamos su presencia digital (${lead.websiteUrl || 'su canal online'}) y detectamos oportunidades determinantes para multiplicar sus ventas:
+
+1. OPORTUNIDADES DE MEJORA DETECTADAS:
+• Falta de Automatización Comercial: Las consultas comerciales se atienden de forma manual, generando retrasos en horarios de alta afluencia.
+• Desvinculación de Redes y Portal Web: No disponen de flujos directos para convertir visitantes de redes en cotizaciones cerradas por WhatsApp.
+• Oportunidad de Agendamiento Online: Ausencia de herramienta interactiva para que sus clientes agenden citas o pedidos en autoservicio.
+
+2. SOLUCIONES RECOMENDADAS VERTEX:
+• Canal Automatizado de WhatsApp Business conectado con su equipo de ventas y catálogo interactivo.
+• Sistema de Agendamiento Digital 24/7 con confirmaciones automáticas.
+• Integración de Campañas Digitales orientadas a captación de prospectos calificados.
+
+Si desean conocer el plan de trabajo y modernizar sus canales de venta, pueden responder directamente a este mensaje para agendar una reunión formal con nuestro equipo.
+
+💡 Si tienen alguna duda o desean conocer más sobre nuestro trabajo y portafolio de servicios, pueden consultar nuestro sitio web oficial:
+👉 https://vertexcorp.com.co/es
+
+Atentamente,
+*Ray Mendoza* | Director de Desarrollo
+VERTEX Innovation & Consulting
+📱 +57 300 865 8910 | ✉️ gerenciavertexsas@gmail.com
+🌐 https://vertexcorp.com.co/es`;
     }
 
     const emailDraft: OutreachDraftDto = {

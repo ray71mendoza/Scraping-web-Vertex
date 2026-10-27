@@ -460,10 +460,10 @@ export function LeadDetailModal({
                             Cuerpo del Correo (Editable)
                           </label>
                           <textarea
-                            rows={8}
+                            rows={14}
                             value={emailBody}
                             onChange={(e) => setEmailBody(e.target.value)}
-                            className="mt-1 w-full p-3 rounded-xl bg-[#08080d] border border-white/10 text-xs text-gray-200 whitespace-pre-line leading-relaxed focus:outline-none focus:border-indigo-500"
+                            className="mt-1 w-full p-3 rounded-xl bg-[#08080d] border border-white/10 text-xs text-gray-200 whitespace-pre-line leading-relaxed focus:outline-none focus:border-indigo-500 font-sans"
                           />
                         </div>
                       </div>
@@ -473,10 +473,10 @@ export function LeadDetailModal({
                           Mensaje de WhatsApp Comercial (Editable)
                         </label>
                         <textarea
-                          rows={8}
+                          rows={14}
                           value={whatsappBody}
                           onChange={(e) => setWhatsappBody(e.target.value)}
-                          className="mt-1 w-full p-3 rounded-xl bg-emerald-950/20 border border-emerald-500/20 text-xs text-emerald-100 whitespace-pre-line leading-relaxed focus:outline-none focus:border-emerald-500"
+                          className="mt-1 w-full p-3 rounded-xl bg-emerald-950/20 border border-emerald-500/20 text-xs text-emerald-100 whitespace-pre-line leading-relaxed focus:outline-none focus:border-emerald-500 font-sans"
                         />
                       </div>
                     )}
@@ -835,7 +835,7 @@ export function LeadDetailModal({
                     <p className="text-[11px]">gerenciavertexsas@gmail.com | +57 300 865 8910</p>
                   </div>
                   <div className="text-right font-mono text-[10px]">
-                    https://vertexcorp.com.co
+                    https://vertexcorp.com.co/es
                   </div>
                 </div>
               </div>

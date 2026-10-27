@@ -123,7 +123,7 @@ export function sanitizeClientReport(internalReport: any): ClientReportProjectio
       role: 'Director de Desarrollo',
       email: 'gerenciavertexsas@gmail.com',
       phone: '+57 300 865 8910',
-      website: 'https://vertexcorp.com.co',
+      website: 'https://vertexcorp.com.co/es',
       logoUrl: '/vertex-logo.png',
     },
   };
