@@ -33,6 +33,7 @@ export class OutreachService {
   // Email Config (Resend)
   private readonly resendApiKey: string;
   private readonly emailFrom: string;
+  private readonly emailReplyTo: string;
 
   // WhatsApp Config (Meta WhatsApp Business Platform Cloud API)
   private readonly whatsappToken: string;
@@ -41,7 +42,8 @@ export class OutreachService {
 
   constructor(private configService: ConfigService) {
     this.resendApiKey = this.configService.get<string>('RESEND_API_KEY', '');
-    this.emailFrom = this.configService.get<string>('EMAIL_FROM', 'prospectos@vertexcorp.com.co');
+    this.emailFrom = this.configService.get<string>('EMAIL_FROM', 'VERTEX Gerencia <gerencia@mail.vertexcorp.com.co>');
+    this.emailReplyTo = this.configService.get<string>('EMAIL_REPLY_TO', 'gerenciavertexsas@gmail.com');
 
     this.whatsappToken = this.configService.get<string>('WHATSAPP_API_TOKEN', '');
     this.whatsappPhoneId = this.configService.get<string>('WHATSAPP_PHONE_NUMBER_ID', '');
@@ -417,6 +419,7 @@ Vimos su sitio web y excelente presencia local. En VERTEX ayudamos a empresas co
           {
             from: this.emailFrom,
             to: [toEmail],
+            reply_to: this.emailReplyTo,
             subject,
             html: htmlContent,
             text: bodyText,
