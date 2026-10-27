@@ -199,7 +199,7 @@ Esta situación desvía a clientes potenciales que buscan activamente sus servic
 
 En VERTEX desarrollamos plataformas web modernas, veloces y diseñadas específicamente para captar clientes locales y automatizar la atención directa.
 
-¿Tendrían disponibilidad de 10 minutos esta semana para una breve llamada demostrativa donde les mostraremos cómo captar estas búsquedas?
+Si están interesados en captar estas búsquedas y modernizar su infraestructura digital, pueden comunicarse respondiendo directamente a este correo para agendar una reunión formal y presentarles la propuesta comercial detallada.
 
 Atentamente,
 Ray Mendoza
@@ -208,22 +208,18 @@ gerenciavertexsas@gmail.com | +57 300 865 8910
 https://vertexcorp.com.co`;
 
       whatsappBody = `¡Hola equipo de ${lead.businessName}! 👋
-Analizamos su presencia en Google Maps y destacamos su excelente calificación de ${lead.googleRating?.toFixed(1) || '4.0'}★.
-
-Notamos que aún no disponen de sitio web corporativo para canalizar consultas online, lo que representa una fuga de clientes que buscan sus servicios a diario.
-
-En VERTEX diseñamos páginas web rápidas y sistemas de captación directa para negocios locales. ¿Les interesaría ver una demo de 2 minutos sin compromiso? 📲`;
+Analizamos su presencia en Google Maps (${lead.googleRating?.toFixed(1) || '4.0'}★) y vimos cómo captar más clientes implementando su portal web y canal de ventas. Si desean revisar la propuesta, respondan a este mensaje para agendar una reunión con nuestro equipo técnico. 📲`;
     } else if (hasMobileIssue || hasSslIssue) {
       serviceCodes.push(hasMobileIssue ? 'WEB_DEV_REDESIGN' : 'SEC_SSL_INFRA');
-      emailSubject = `${lead.businessName}: Oportunidad de optimización técnica en ${lead.websiteUrl || 'su web'}`;
+      emailSubject = `${lead.businessName}: Oportunidad de optimización técnica y seguridad web`;
       emailBody = `Estimado equipo de ${lead.businessName},
 
-Llevamos a cabo una auditoría de rendimiento y seguridad sobre su sitio web (${lead.websiteUrl || 'su portal'}). Detectamos oportunidades técnicas de alto impacto comercial:
+Llevamos a cabo una auditoría de rendimiento, presencia móvil y seguridad sobre su portal web (${lead.websiteUrl || 'su portal'}). Detectamos oportunidades técnicas de alto impacto comercial:
 
-${hasMobileIssue ? '• Navegación móvil no adaptada: El sitio no cuenta con viewport responsivo, dificultando la lectura y reserva en smartphones.\n' : ''}${hasSslIssue ? '• Advertencia de seguridad SSL: El navegador clasifica la conexión como "No segura", reduciendo la confianza de los visitantes.\n' : ''}
+${hasMobileIssue ? '• Navegación móvil no adaptada: El sitio no cuenta con viewport responsivo, dificultando la lectura y compra en smartphones.\n' : ''}${hasSslIssue ? '• Advertencia de seguridad SSL: El navegador clasifica la conexión como "No segura", reduciendo la confianza de los visitantes.\n' : ''}
 En VERTEX modernizamos plataformas web existentes garantizando carga instantánea, navegación fluida en celulares y certificación de seguridad completa.
 
-¿Les interesaría revisar el informe técnico resumido en una breve llamada de 10 minutos?
+Si están interesados en corregir estas falencias y elevar la conversión de su portal, pueden comunicarse respondiendo a este mensaje para agendar una reunión técnica.
 
 Cordialmente,
 Ray Mendoza
@@ -232,9 +228,7 @@ gerenciavertexsas@gmail.com | +57 300 865 8910
 https://vertexcorp.com.co`;
 
       whatsappBody = `¡Hola ${lead.businessName}! 👋
-Realizamos una auditoría técnica rápida a su sitio web (${lead.websiteUrl}) y vimos oportunidades clave para optimizar la experiencia móvil y seguridad de sus visitantes.
-
-¿Les gustaría que les compartamos el diagnóstico técnico gratuito para revisarlo en 2 minutos? 📊`;
+Realizamos una auditoría técnica a su sitio web (${lead.websiteUrl}) y vimos oportunidades clave en seguridad y experiencia móvil. Si les interesa evaluar las soluciones, pueden responder a este mensaje para agendar una reunión formal. 📊`;
     } else {
       serviceCodes.push('AUTOMATION_WHATSAPP_CRM', 'SEO_LOCAL_TECH');
       emailSubject = `${lead.businessName}: Optimización de conversión comercial y canal WhatsApp`;
@@ -244,7 +238,7 @@ Revisamos su presencia digital en ${lead.websiteUrl || 'Google'} y encontramos u
 
 En VERTEX conectamos sitios web con flujos de atención comercial inmediata que multiplican las consultas efectivas.
 
-¿Tendrían disponibilidad para conversar 10 minutos sobre cómo podemos implementar esta automatización?
+Si están interesados en evaluar cómo implementar esta automatización, los invitamos a responder directamente a este correo para agendar una sesión de trabajo.
 
 Saludos cordiales,
 Ray Mendoza

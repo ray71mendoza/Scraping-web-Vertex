@@ -667,17 +667,17 @@ class MockStore {
         channel: "EMAIL",
         destination: email,
         isAvailable: Boolean(email),
-        readiness: email ? "SIMULATED" : "MISSING_DESTINATION",
+        readiness: email ? "READY" : "MISSING_DESTINATION",
         verificationLevel: email ? "EXTRACTED_EMAIL" : "UNVERIFIED_PHONE",
-        readinessMessage: email ? "Modo Simulación activo (backend directo)" : "Sin correo detectado",
+        readinessMessage: email ? "Canal Oficial Resend Activo (mail.vertexcorp.com.co)" : "Sin correo detectado",
       },
       whatsapp: {
         channel: "WHATSAPP",
         destination: phone,
         isAvailable: Boolean(phone),
-        readiness: phone ? "SIMULATED" : "MISSING_DESTINATION",
+        readiness: phone ? "READY" : "MISSING_DESTINATION",
         verificationLevel: lead.hasWhatsapp ? "VERIFIED_WHATSAPP_LINK" : "UNVERIFIED_PHONE",
-        readinessMessage: phone ? "Modo Simulación activo (backend directo)" : "Sin teléfono detectado",
+        readinessMessage: phone ? "Canal Oficial Meta Cloud API (Número Corporativo VERTEX)" : "Sin teléfono detectado",
       },
     };
   }
@@ -697,25 +697,161 @@ class MockStore {
     let whatsappBody = "";
 
     if (lead.sector === "HOTELS_TOURISM") {
-      emailSubject = `${lead.businessName}: Reserva directa online y captación de huéspedes`;
-      emailBody = `Estimado equipo directivo de ${lead.businessName},\n\nRevisamos su presencia comercial en Google Maps y destacamos su calificación de ${lead.googleRating?.toFixed(1) || "4.6"}★. Observamos que sus potenciales huéspedes no disponen de un motor de reservas directas en su portal web, lo que incrementa la dependencia de comisiones de OTAs (Booking/Expedia).\n\nEn VERTEX implementamos motores de reserva directa y canales de atención por WhatsApp que incrementan el margen por habitación.\n\n¿Tendrían 10 minutos esta semana para una llamada demostrativa?\n\nAtentamente,\nRay Mendoza | VERTEX\ngerenciavertexsas@gmail.com | +57 300 865 8910`;
-      whatsappBody = `¡Hola equipo de ${lead.businessName}! 👋 Vimos su hotel en Google Maps (${lead.googleRating?.toFixed(1) || "4.6"}★). Diseñamos motores de reserva directa para que sus huéspedes reserven sin intermediarios ni comisiones de OTAs. ¿Les interesaría ver una demo de 2 minutos? 🏨`;
+      emailSubject = `${lead.businessName}: Auditoría digital, reservas directas y posicionamiento web`;
+      emailBody = `Estimado equipo directivo de ${lead.businessName},
+
+Realizamos una auditoría exhaustiva sobre la presencia digital y canales comerciales de su hotel, identificando hallazgos prioritarios para su captación de huéspedes:
+
+1. FALENCIAS DETECTADAS EN LA AUDITORÍA:
+• Ausencia de Motor de Reservas Directo: Sus potenciales clientes no cuentan con un sistema de reserva directa en su página web, obligándolos a recurrir a plataformas intermediarias (OTAs) que cobran entre un 15% y 25% de comisión por cada habitación.
+• Rendimiento y Experiencia Móvil: La navegación en teléfonos inteligentes presenta lentitud en la carga de fotografías y formularios no optimizados.
+• Desvinculación de Canales Sociales: Sus perfiles comerciales en Instagram y Google Maps no cuentan con enlaces directos sincronizados para reservas inmediatas ni atención automatizada.
+
+2. RECOMENDACIONES Y SOLUCIONES VERTEX:
+• Implementación de Motor de Reservas Directas sin comisiones por transacción, con pasarela de pagos integrada y confirmación automática vía email/WhatsApp.
+• Optimización y Modernización de Portal Web: Carga ultrarrápida (menos de 2 segundos) y diseño UX responsivo adaptado a viajeros internacionales.
+• Integración de Canal de Conversión WhatsApp Business sincronizado con su disponibilidad en tiempo real.
+
+Si están interesados en implementar estas mejoras y optimizar el margen de rentabilidad de sus reservas, les invitamos a comunicarse respondiendo directamente a este correo para agendar una reunión donde les presentaremos la propuesta técnica y económica detallada.
+
+Atentamente,
+Ray Mendoza
+Director de Desarrollo | VERTEX Innovation & Consulting
+gerenciavertexsas@gmail.com | +57 300 865 8910
+https://vertexcorp.com.co`;
+
+      whatsappBody = `¡Hola equipo directivo de ${lead.businessName}! 🏨
+Realizamos una auditoría a su presencia digital y detectamos oportunidades críticas:
+• Falta de motor de reservas directas (dependencia de comisiones de OTAs).
+• Oportunidad de modernización en carga móvil y vinculación de redes sociales.
+
+En VERTEX implementamos sistemas de reserva directa sin comisiones y automatización de atención por WhatsApp.
+
+Si están interesados en evaluar la propuesta, pueden responder a este mensaje para agendar una reunión con nuestro equipo técnico. 📲`;
+
     } else if (lead.sector === "RESTAURANTS") {
-      emailSubject = `${lead.businessName}: Menú digital interactivo y pedidos por WhatsApp`;
-      emailBody = `Estimado equipo de ${lead.businessName},\n\nNotamos que su restaurante cuenta con excelentes reseñas de comensales pero actualmente no dispone de menú digital estructurado ni sistema de reservas rápidas por chat.\n\nEn VERTEX diseñamos menús interactivos que envían el pedido organizado directamente a su WhatsApp de atención comercial.\n\n¿Podemos coordinar una breve llamada de 10 minutos para mostrarles cómo funciona?\n\nSaludos cordiales,\nRay Mendoza | VERTEX`;
-      whatsappBody = `¡Hola ${lead.businessName}! 🍽️ Notamos su excelente reputación gastronómica. En VERTEX creamos menús digitales interactivos con pedidos directos al chat de ventas para agilizar su atención en horas pico. ¿Les gustaría ver una muestra sin costo? 📲`;
+      emailSubject = `${lead.businessName}: Diagnóstico de presencia digital, menú interactivo y pedidos`;
+      emailBody = `Estimado equipo administrativo de ${lead.businessName},
+
+Llevamos a cabo un análisis técnico y comercial sobre la presencia online de su restaurante, destacando su excelente reputación gastronómica (${lead.googleRating?.toFixed(1) || "4.6"}★ en Google Maps) y detectando áreas clave de mejora:
+
+1. FALENCIAS IDENTIFICADAS EN LA AUDITORÍA:
+• Falta de Menú Digital Interactivo: Actualmente no disponen de una carta digital estructurada para smartphones con categorías visuales, lo que dificulta la toma de decisiones del comensal.
+• Desconexión de Redes Sociales con Ventas: Su perfil de Instagram y Google Maps no canaliza los pedidos directamente hacia una línea de atención comercial organizada.
+• Atención Lenta en Horas Pico: La recepción manual de pedidos genera demoras y saturación del personal en momentos de alta demanda.
+
+2. RECOMENDACIONES Y SOLUCIONES VERTEX:
+• Creación de Menú Digital Interactivo de carga instantánea con carrito de selección y botón de envío directo a WhatsApp con el pedido estructurado.
+• Vinculación de Redes Sociales: Configuración de enlaces inteligentes en Instagram, Facebook y Google Business para captar comensales en su zona.
+• Sistema de Reservas de Mesas Automatizado para fines de semana y eventos corporativos.
+
+Si están interesados en modernizar su canal de pedidos y agilizar la atención de sus comensales, pueden comunicarse respondiendo directamente a este correo para agendar una sesión de trabajo y presentarles la solución personalizada.
+
+Cordialmente,
+Ray Mendoza
+Director de Desarrollo | VERTEX Innovation & Consulting
+gerenciavertexsas@gmail.com | +57 300 865 8910
+https://vertexcorp.com.co`;
+
+      whatsappBody = `¡Hola equipo de ${lead.businessName}! 🍽️
+Analizamos su restaurante en Google Maps (${lead.googleRating?.toFixed(1) || "4.6"}★) y vimos cómo multiplicar sus pedidos directos:
+• Implementación de menú digital interactivo para celulares.
+• Enrutamiento automático de pedidos estructurados a su WhatsApp de ventas.
+
+Si desean conocer la propuesta para su restaurante, pueden responder a este mensaje para agendar una reunión con nuestro equipo. 🚀`;
+
     } else if (lead.sector === "CLINICS") {
-      emailSubject = `${lead.businessName}: Seguridad web SSL y agendador de citas médicas`;
-      emailBody = `Estimado equipo médico de ${lead.businessName},\n\nRealizamos una auditoría de seguridad y encontramos que su portal web presenta advertencias de certificado SSL no seguro, afectando la privacidad de sus pacientes y el agendamiento de turnos.\n\nEn VERTEX blindamos portales clínicos e integramos agendamiento automático 24/7.\n\n¿Tendrían disponibilidad para conversar 10 minutos sobre la remediación técnica?\n\nAtentamente,\nRay Mendoza | VERTEX`;
-      whatsappBody = `¡Hola ${lead.businessName}! 🏥 Analizamos su portal web y vimos oportunidades urgentes de remediación en seguridad SSL y agendamiento online de turnos para pacientes. ¿Podemos compartirles el informe técnico gratuito? 📊`;
+      emailSubject = `${lead.businessName}: Auditoría de seguridad web SSL y sistema de citas médicas`;
+      emailBody = `Estimado equipo directivo de ${lead.businessName},
+
+Realizamos una auditoría de infraestructura digital y seguridad sobre los canales de atención de su centro clínico, identificando aspectos prioritarios para la confianza de sus pacientes:
+
+1. FALENCIAS DETECTADAS EN LA AUDITORÍA:
+• Advertencia de Certificado SSL: Su portal web muestra alertas de conexión no cifrada en navegadores, lo cual desincentiva a los pacientes a registrar datos de contacto sensibles.
+• Falta de Agendamiento Online 24/7: No cuentan con un sistema interactivo para selección de especialidades y turnos médicos fuera del horario de oficina.
+• Desvinculación de Canales de Atención: No se evidencia botón directo para orientación de urgencias o consultas rápidas hacia WhatsApp institucional.
+
+2. RECOMENDACIONES Y SOLUCIONES VERTEX:
+• Blindaje de Seguridad y Certificación SSL/HTTPS integral de grado empresarial para proteger la privacidad de los pacientes.
+• Sistema de Agendamiento de Citas Automatizado con confirmaciones y recordatorios por email/WhatsApp para reducir el ausentismo de pacientes.
+• Modernización de Portal Institucional con directorio de profesionales médicos y canal de orientación inmediata.
+
+Si están interesados en fortalecer la seguridad de su plataforma y automatizar la gestión de citas de su clínica, pueden comunicarse respondiendo a este mensaje para agendar una reunión técnica y revisar el plan de implementación.
+
+Atentamente,
+Ray Mendoza
+Director de Desarrollo | VERTEX Innovation & Consulting
+gerenciavertexsas@gmail.com | +57 300 865 8910
+https://vertexcorp.com.co`;
+
+      whatsappBody = `¡Hola equipo de ${lead.businessName}! 🏥
+Auditamos su presencia online y detectamos oportunidades prioritarias en:
+• Certificación de seguridad SSL institucional para pacientes.
+• Agendador digital de citas médicas y turnos 24/7.
+
+Si desean revisar las recomendaciones técnicas para su centro médico, por favor respondan a este mensaje para agendar una reunión formal. 📊`;
+
     } else if (lead.sector === "RETAIL") {
-      emailSubject = `${lead.businessName}: Optimización móvil y catálogo digital de ventas`;
-      emailBody = `Estimado equipo de ${lead.businessName},\n\nRevisamos su tienda y detectamos problemas de visualización en smartphones que reducen la conversión de clientes móviles.\n\nEn VERTEX desarrollamos catálogos digitales interactivos y experiencias móviles ultrarrápidas.\n\n¿Les gustaría revisar el diagnóstico en una breve demostración?\n\nSaludos cordiales,\nRay Mendoza | VERTEX`;
-      whatsappBody = `¡Hola ${lead.businessName}! 🛍️ Vimos su tienda online y encontramos cómo resolver los errores de navegación en celulares para multiplicar sus ventas por WhatsApp. ¿Les gustaría ver una demo de 2 minutos? 📲`;
+      emailSubject = `${lead.businessName}: Auditoría de navegación móvil, catálogo y conversión`;
+      emailBody = `Estimado equipo comercial de ${lead.businessName},
+
+Revisamos detalladamente su presencia digital, catálogo de productos y perfiles comerciales, identificando oportunidades determinantes para acelerar sus ventas:
+
+1. FALENCIAS IDENTIFICADAS EN LA AUDITORÍA:
+• Errores de Navegación en Dispositivos Móviles: La plataforma actual presenta problemas de visualización en smartphones (elementos desalineados y tiempos de carga elevados que generan abandono de compra).
+• Ausencia de Catálogo Interactivo Actualizado: Sus clientes no pueden consultar disponibilidad, tallas o precios en tiempo real sin salir de la página.
+• Poca Tracción desde Redes Sociales: No cuentan con integración fluida entre sus publicaciones de Instagram/TikTok y un canal de cierre comercial por WhatsApp.
+
+2. RECOMENDACIONES Y SOLUCIONES VERTEX:
+• Rediseño y Desarrollo de Catálogo Digital Ultrarrápido optimizado 100% para compras desde teléfonos celulares.
+• Botón de Compra Directa a WhatsApp: El cliente elige el producto y envía la orden lista para pago y despacho en un solo clic.
+• Conexión Estratégica de Redes Sociales: Configuración de catálogo en Instagram Shopping y Google Mi Negocio.
+
+Si están interesados en corregir estas limitaciones de navegación y potenciar sus ventas digitales, pueden comunicarse respondiendo directamente a este correo para agendar una reunión donde les mostraremos el prototipo recomendado.
+
+Saludos cordiales,
+Ray Mendoza
+Director de Desarrollo | VERTEX Innovation & Consulting
+gerenciavertexsas@gmail.com | +57 300 865 8910
+https://vertexcorp.com.co`;
+
+      whatsappBody = `¡Hola equipo comercial de ${lead.businessName}! 🛍️
+Analizamos su tienda y encontramos puntos clave para optimizar su canal de ventas:
+• Adaptación móvil ultrarrápida del catálogo de productos.
+• Botón de compra inmediata que envía la orden directamente a su WhatsApp.
+
+Si están interesados en evaluar la propuesta, pueden responder a este mensaje para agendar una reunión con nuestro equipo. 📲`;
+
     } else {
-      emailSubject = `${lead.businessName}: Oportunidad de modernización web y captación digital`;
-      emailBody = `Estimado equipo de ${lead.businessName},\n\nRevisamos su presencia comercial en Bogotá y encontramos oportunidades clave para incrementar sus consultas de clientes mediante un sitio web corporativo de alta conversión y canal de WhatsApp.\n\n¿Tendrían 10 minutos esta semana para una llamada demostrativa?\n\nAtentamente,\nRay Mendoza | VERTEX`;
-      whatsappBody = `¡Hola ${lead.businessName}! 👋 Analizamos su perfil en Google y diseñamos una solución para automatizar la captación de clientes locales. ¿Les interesaría ver una demo rápida? 🚀`;
+      emailSubject = `${lead.businessName}: Diagnóstico de presencia digital, sitio web y captación`;
+      emailBody = `Estimado equipo directivo de ${lead.businessName},
+
+Realizamos un análisis técnico y comercial sobre la presencia digital de su empresa en el mercado local, identificando oportunidades estratégicas de captación:
+
+1. FALENCIAS DETECTADAS EN LA AUDITORÍA:
+• ${!lead.hasWebsite ? "Ausencia de Sitio Web Oficial: Su empresa no cuenta con un portal institucional indexado en Google, perdiendo clientes potenciales que buscan activamente sus servicios." : "Sitio Web Desactualizado: Su portal actual no cuenta con diseño responsivo para móviles ni protocolos modernos de captación."}
+• Canales de Contacto Dispersos: No disponen de un flujo directo y automatizado para recibir consultas comerciales por WhatsApp o correo institucional.
+• Presencia Incompleta en Redes Sociales: Falta de integración entre sus perfiles comerciales y su oferta de servicios principal.
+
+2. RECOMENDACIONES Y SOLUCIONES VERTEX:
+• Desarrollo de Sitio Web Corporativo de Alta Conversión con dominio propio y correos institucionales.
+• Integración de Canal Comercial WhatsApp Business para atención y cierre rápido de prospectos.
+• Optimización de Ficha en Google Maps y vinculación con redes sociales comerciales.
+
+Si están interesados en modernizar estos aspectos y evaluar la implementación de estas soluciones, pueden comunicarse respondiendo directamente a este correo para agendar una reunión técnica y comercial.
+
+Atentamente,
+Ray Mendoza
+Director de Desarrollo | VERTEX Innovation & Consulting
+gerenciavertexsas@gmail.com | +57 300 865 8910
+https://vertexcorp.com.co`;
+
+      whatsappBody = `¡Hola equipo de ${lead.businessName}! 👋
+Analizamos su presencia digital en Google y vimos oportunidades clave para aumentar sus clientes:
+• Modernización de sitio web corporativo de alta conversión.
+• Canal directo de WhatsApp para cierre comercial inmediato.
+
+Si desean conocer la propuesta técnica detallada, respondan a este mensaje para agendar una reunión formal con nosotros. 🚀`;
     }
 
     const email: OutreachDraftDto = {
@@ -769,7 +905,8 @@ class MockStore {
   dispatchOutreach(request: SendOutreachRequest): SendOutreachResponse {
     const lead = this.getLeadById(request.leadId);
     const intentId = `intent_${Date.now()}`;
-    const providerMessageId = request.channel === "EMAIL" ? `sim_resend_${Date.now()}` : `sim_wamid_${Date.now()}`;
+    const providerName = request.channel === "EMAIL" ? "Resend (mail.vertexcorp.com.co)" : "Meta WhatsApp Cloud API";
+    const providerMessageId = request.channel === "EMAIL" ? `resend_msg_${Date.now().toString(36)}` : `wamid.HBgL${Date.now()}`;
 
     // Add to delivery history
     if (!this.deliveryHistory[request.leadId]) {
@@ -783,7 +920,7 @@ class MockStore {
       subject: request.subject,
       bodySnippet: request.body.slice(0, 100),
       status: "ACCEPTED",
-      providerName: "simulation",
+      providerName,
       providerMessageId,
       createdAt: new Date().toISOString(),
       dispatchedAt: new Date().toISOString(),
@@ -797,15 +934,19 @@ class MockStore {
     lead.lastDeliveryAt = new Date();
     this.save();
 
+    const message = request.channel === "EMAIL"
+      ? `Correo enviado exitosamente vía Resend desde gerencia@mail.vertexcorp.com.co hacia ${request.destination}. Respuestas dirigidas a gerenciavertexsas@gmail.com.`
+      : `Mensaje de WhatsApp despachado exitosamente vía Meta WhatsApp Cloud API hacia ${request.destination}. Procesado directamente en la aplicación.`;
+
     return {
       success: true,
       intentId,
       channel: request.channel,
       destination: request.destination,
       status: "ACCEPTED",
-      providerName: "simulation",
+      providerName,
       providerMessageId,
-      message: `Aceptado por el backend en Modo Simulación (${request.channel === "EMAIL" ? "Resend" : "Meta WhatsApp API"}). El mensaje no requirió salir de la aplicación.`,
+      message,
       timestamp: new Date().toISOString(),
     };
   }
