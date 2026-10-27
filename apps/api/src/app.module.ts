@@ -12,6 +12,9 @@ import { GooglePlacesModule } from './modules/google-places/google-places.module
 import { ScoringModule } from './modules/scoring/scoring.module';
 import { AiEngineModule } from './modules/ai-engine/ai-engine.module';
 import { OutreachModule } from './modules/outreach/outreach.module';
+import { CatalogModule } from './modules/catalog/catalog.module';
+import { ProposalsModule } from './modules/proposals/proposals.module';
+import { ReportsModule } from './modules/reports/reports.module';
 
 @Module({
   imports: [
@@ -27,6 +30,9 @@ import { OutreachModule } from './modules/outreach/outreach.module';
     ScoringModule,
     AiEngineModule,
     OutreachModule,
+    CatalogModule,
+    ProposalsModule,
+    ReportsModule,
   ],
 })
 export class AppModule {}

@@ -113,6 +113,20 @@ model Lead {
   opportunityScore Int @default(0) @map("opportunity_score")
   opportunityTier  OpportunityLevel @default(VERY_HIGH) @map("opportunity_tier")
 
+  // ── Explainable Scoring & Multi-Dimensional Capabilities ──
+  canonicalPlaceId         String?   @map("canonical_place_id")
+  sector                   String    @default("GENERAL") @map("sector")
+  digitalNeedScore         Int       @default(0) @map("digital_need_score")
+  serviceFitScore          Int       @default(0) @map("service_fit_score")
+  evidenceConfidenceScore  Int       @default(0) @map("evidence_confidence_score")
+  evidenceCoverage         Float     @default(0) @map("evidence_coverage")
+  scoringVersion           String    @default("v2.1-multi-dim") @map("scoring_version")
+  scoringExplanation       Json?     @map("scoring_explanation")
+  contactVerificationLevel String    @default("UNVERIFIED") @map("contact_verification_level")
+  contactChannelsAvailable String[]  @default([]) @map("contact_channels_available")
+  deliveryStatus           String    @default("NOT_SENT") @map("delivery_status")
+  lastDeliveryAt           DateTime? @map("last_delivery_at")
+
   // ── Status & AI ──
   status       LeadStatus @default(DISCOVERED)
   aiDiagnosis  Json?      @map("ai_diagnosis")
@@ -123,11 +137,324 @@ model Lead {
   createdAt  DateTime  @default(now()) @map("created_at")
   updatedAt  DateTime  @updatedAt @map("updated_at")
 
-  campaign     SearchCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  organization Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  campaign       SearchCampaign   @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  auditRuns      AuditRun[]
+  checkResults   CheckResult[]
+  findings       Finding[]
+  scoreResults   ScoreResult[]
+  proposals      ProposalVersion[]
+  reports        ReportVersion[]
+  outreachDrafts OutreachDraft[]
+  deliveryIntents DeliveryIntent[]
 
   @@index([opportunityTier, organizationId])
   @@index([campaignId])
   @@index([status])
+  @@index([sector])
+  @@index([deliveryStatus])
   @@map("leads")
+}
+
+// ── Canonical Audit Engine Models ────────────────────────────
+
+enum CheckOutcome {
+  PRESENT
+  ABSENT
+  NOT_DETECTED
+  UNKNOWN
+  BLOCKED
+  ERROR
+  NOT_APPLICABLE
+}
+
+enum CheckSeverity {
+  CRITICAL
+  HIGH
+  MEDIUM
+  LOW
+  INFO
+}
+
+model AuditRun {
+  id             String    @id @default(uuid())
+  leadId         String    @map("lead_id")
+  organizationId String    @map("organization_id")
+  auditMode      String    @default("QUICK") @map("audit_mode") // QUICK, DETAILED
+  status         String    @default("COMPLETED") @map("status") // RUNNING, COMPLETED, PARTIAL, FAILED
+  coveragePct    Float     @default(0) @map("coverage_pct")
+  pagesInspected String[]  @default([]) @map("pages_inspected")
+  errorSummary   String?   @map("error_summary")
+  metadata       Json?     @map("metadata")
+  startedAt      DateTime  @default(now()) @map("started_at")
+  completedAt    DateTime? @map("completed_at")
+
+  lead         Lead          @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  checkResults CheckResult[]
+  findings     Finding[]
+  scoreResults ScoreResult[]
+
+  @@index([leadId])
+  @@index([organizationId])
+  @@map("audit_runs")
+}
+
+model CheckResult {
+  id                 String       @id @default(uuid())
+  auditRunId         String       @map("audit_run_id")
+  leadId             String       @map("lead_id")
+  checkKey           String       @map("check_key")
+  checkVersion       String       @default("1.0") @map("check_version")
+  category           String       @map("category") // AVAILABILITY, PERFORMANCE, ON_PAGE_SEO, ACCESSIBILITY, MOBILE, COMMERCIAL
+  outcome            CheckOutcome @default(UNKNOWN)
+  severity           CheckSeverity @default(INFO)
+  commercialImpact   String?      @map("commercial_impact")
+  sourceUrl          String?      @map("source_url")
+  normalizedMessage  String       @map("normalized_message")
+  confidenceBasis    String?      @map("confidence_basis")
+  rawObservation     Json?        @map("raw_observation")
+  errorClassification String?     @map("error_classification")
+  observedAt         DateTime     @default(now()) @map("observed_at")
+
+  auditRun AuditRun @relation(fields: [auditRunId], references: [id], onDelete: Cascade)
+  lead     Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([auditRunId])
+  @@index([leadId])
+  @@index([checkKey])
+  @@map("check_results")
+}
+
+model Finding {
+  id               String        @id @default(uuid())
+  auditRunId       String        @map("audit_run_id")
+  leadId           String        @map("lead_id")
+  code             String        @map("code")
+  title            String
+  description      String
+  severity         CheckSeverity @default(INFO)
+  commercialImpact String        @map("commercial_impact")
+  targetServiceCode String?      @map("target_service_code")
+  evidenceExcerpts Json?         @map("evidence_excerpts")
+  createdAt        DateTime      @default(now()) @map("created_at")
+
+  auditRun AuditRun @relation(fields: [auditRunId], references: [id], onDelete: Cascade)
+  lead     Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([auditRunId])
+  @@index([leadId])
+  @@map("findings")
+}
+
+model ScoreResult {
+  id                      String   @id @default(uuid())
+  auditRunId              String   @map("audit_run_id")
+  leadId                  String   @map("lead_id")
+  scoringVersion          String   @map("scoring_version")
+  configVersion           String   @map("config_version")
+  sectorProfile           String   @map("sector_profile")
+  digitalNeedScore        Int      @map("digital_need_score")
+  serviceFitScore         Int      @map("service_fit_score")
+  evidenceConfidenceScore Int      @map("evidence_confidence_score")
+  evidenceCoverage        Float    @map("evidence_coverage")
+  isInsufficientEvidence  Boolean  @default(false) @map("is_insufficient_evidence")
+  ruleContributions       Json     @map("rule_contributions")
+  exclusions              Json?    @map("exclusions")
+  calculatedAt            DateTime @default(now()) @map("calculated_at")
+
+  auditRun AuditRun @relation(fields: [auditRunId], references: [id], onDelete: Cascade)
+  lead     Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([auditRunId])
+  @@index([leadId])
+  @@map("score_results")
+}
+
+// ── Service Catalog & Proposals ──────────────────────────────
+
+model ServiceCatalogItem {
+  id                   String   @id @default(uuid())
+  organizationId       String   @map("organization_id")
+  code                 String   @unique
+  name                 String
+  category             String   // WEB_DEV, PERFORMANCE, SEO, ECOMMERCE, BOOKING, AUTOMATION, SECURITY
+  description          String
+  applicableSectors    String[] @default([]) @map("applicable_sectors")
+  requiredCheckKeys    String[] @default([]) @map("required_check_keys")
+  deliverables         String[] @default([])
+  exclusions           String[] @default([])
+  dependencies         String[] @default([])
+  pricingModel         String   @default("CUSTOM_QUOTE") @map("pricing_model") // FIXED, MONTHLY, CUSTOM_QUOTE
+  basePrice            Float?   @map("base_price")
+  currency             String   @default("COP")
+  estimatedDurationDays Int?    @map("estimated_duration_days")
+  isActive             Boolean  @default(true) @map("is_active")
+  version              Int      @default(1)
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
+
+  @@map("service_catalog_items")
+}
+
+model ProposalVersion {
+  id                     String   @id @default(uuid())
+  leadId                 String   @map("lead_id")
+  organizationId         String   @map("organization_id")
+  version                Int      @default(1)
+  title                  String
+  executiveSummary       String   @map("executive_summary")
+  verifiedFindingIds     String[] @default([]) @map("verified_finding_ids")
+  recommendedServiceCodes String[] @default([]) @map("recommended_service_codes")
+  serviceItems           Json     @map("service_items")
+  totalEstimate          Json?    @map("total_estimate")
+  nextStepText           String   @map("next_step_text")
+  status                 String   @default("DRAFT") // DRAFT, REVIEWED, SENT
+  createdAt              DateTime @default(now()) @map("created_at")
+  createdBy              String?  @map("created_by")
+
+  lead    Lead            @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  reports ReportVersion[]
+
+  @@index([leadId])
+  @@map("proposal_versions")
+}
+
+// ── Reports & Secure Client Sharing ──────────────────────────
+
+enum ReportType {
+  INTERNAL
+  CLIENT
+}
+
+model ReportVersion {
+  id                String     @id @default(uuid())
+  leadId            String     @map("lead_id")
+  organizationId    String     @map("organization_id")
+  proposalVersionId String?    @map("proposal_version_id")
+  reportType        ReportType @default(CLIENT) @map("report_type")
+  version           Int        @default(1)
+  title             String
+  snapshotData      Json       @map("snapshot_data")
+  checksum          String     @map("checksum")
+  createdAt         DateTime   @default(now()) @map("created_at")
+
+  lead            Lead               @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  proposalVersion ProposalVersion?   @relation(fields: [proposalVersionId], references: [id], onDelete: SetNull)
+  shareTokens     ReportShareToken[]
+  deliveryIntents DeliveryIntent[]
+
+  @@index([leadId])
+  @@index([reportType])
+  @@map("report_versions")
+}
+
+model ReportShareToken {
+  id              String    @id @default(uuid())
+  reportVersionId String    @map("report_version_id")
+  leadId          String    @map("lead_id")
+  token           String    @unique
+  expiresAt       DateTime  @map("expires_at")
+  revokedAt       DateTime? @map("revoked_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  reportVersion ReportVersion @relation(fields: [reportVersionId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([reportVersionId])
+  @@map("report_share_tokens")
+}
+
+// ── In-App Outreach & Direct Delivery ────────────────────────
+
+enum OutreachChannel {
+  EMAIL
+  WHATSAPP
+}
+
+enum DeliveryStatus {
+  PENDING
+  ACCEPTED
+  SENT
+  DELIVERED
+  FAILED
+  CANCELLED
+}
+
+model OutreachDraft {
+  id             String          @id @default(uuid())
+  leadId         String          @map("lead_id")
+  organizationId String          @map("organization_id")
+  channel        OutreachChannel
+  version        Int             @default(1)
+  subject        String?
+  body           String
+  templateId     String?         @map("template_id")
+  templateParams Json?           @map("template_params")
+  findingIds     String[]        @default([]) @map("finding_ids")
+  serviceCodes   String[]        @default([]) @map("service_codes")
+  isReviewed     Boolean         @default(false) @map("is_reviewed")
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
+
+  lead Lead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([leadId, channel])
+  @@map("outreach_drafts")
+}
+
+model DeliveryIntent {
+  id              String          @id @default(uuid())
+  leadId          String          @map("lead_id")
+  organizationId  String          @map("organization_id")
+  channel         OutreachChannel
+  destination     String
+  subject         String?
+  renderedBody    String          @map("rendered_body")
+  templateId      String?         @map("template_id")
+  reportVersionId String?         @map("report_version_id")
+  idempotencyKey  String          @unique @map("idempotency_key")
+  status          DeliveryStatus  @default(PENDING)
+  providerName    String          @default("simulation") @map("provider_name") // resend, whatsapp_cloud, simulation
+  providerMessageId String?       @map("provider_message_id")
+  errorDetails    String?         @map("error_details")
+  operatorId      String?         @map("operator_id")
+  createdAt       DateTime        @default(now()) @map("created_at")
+  dispatchedAt    DateTime?       @map("dispatched_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+
+  lead          Lead              @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  reportVersion ReportVersion?    @relation(fields: [reportVersionId], references: [id], onDelete: SetNull)
+  attempts      DeliveryAttempt[]
+
+  @@index([leadId])
+  @@index([status])
+  @@index([channel])
+  @@map("delivery_intents")
+}
+
+model DeliveryAttempt {
+  id               String   @id @default(uuid())
+  deliveryIntentId String   @map("delivery_intent_id")
+  attemptNumber    Int      @default(1) @map("attempt_number")
+  status           String   @default("ACCEPTED")
+  responseRaw      Json?    @map("response_raw")
+  errorMessage     String?  @map("error_message")
+  attemptedAt      DateTime @default(now()) @map("attempted_at")
+
+  deliveryIntent DeliveryIntent @relation(fields: [deliveryIntentId], references: [id], onDelete: Cascade)
+
+  @@index([deliveryIntentId])
+  @@map("delivery_attempts")
+}
+
+model WebhookEvent {
+  id             String   @id @default(uuid())
+  provider       String   // resend, whatsapp
+  eventType      String   @map("event_type")
+  idempotencyKey String?  @unique @map("idempotency_key")
+  payload        Json
+  processedAt    DateTime @default(now()) @map("processed_at")
+
+  @@index([provider, eventType])
+  @@map("webhook_events")
 }

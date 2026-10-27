@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
 import { Header } from "@/components/shared/header";
 import { OpportunityBadge } from "@/components/shared/opportunity-badge";
 import { ScoreGauge } from "@/components/shared/score-gauge";
-import type { AIDiagnosis } from "@vertex/shared";
+import type { CompanyContactChannels, OutreachDraftDto, DeliveryHistoryItem, CommercialProposalDto, ClientReportProjection } from "@vertex/shared";
 import {
   ArrowLeft,
   Sparkles,
@@ -21,8 +21,13 @@ import {
   Check,
   Send,
   Loader2,
-  Star,
+  Phone,
   Building2,
+  Layers,
+  FileText,
+  Share2,
+  AlertTriangle,
+  History,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -31,47 +36,115 @@ export default function LeadDetailClient() {
   const router = useRouter();
   const leadId = (params?.id as string) || "default";
 
-  const [activeTab, setActiveTab] = useState<"proposal" | "whatsapp">("proposal");
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [isSendingEmail, setIsSendingEmail] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [activeTab, setActiveTab] = useState<"outreach" | "audit" | "proposal" | "reports">("outreach");
+  const [outreachChannel, setOutreachChannel] = useState<"EMAIL" | "WHATSAPP">("EMAIL");
+  const [contactChannels, setContactChannels] = useState<CompanyContactChannels | null>(null);
+  const [drafts, setDrafts] = useState<{ email: OutreachDraftDto; whatsapp: OutreachDraftDto } | null>(null);
+  const [emailSubject, setEmailSubject] = useState("");
+  const [emailBody, setEmailBody] = useState("");
+  const [whatsappBody, setWhatsappBody] = useState("");
+  const [attachReport, setAttachReport] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [sendResult, setSendResult] = useState<{ success: boolean; message: string; providerId?: string } | null>(null);
+  const [deliveryHistory, setDeliveryHistory] = useState<DeliveryHistoryItem[]>([]);
+  const [proposalData, setProposalData] = useState<CommercialProposalDto | null>(null);
+  const [clientReport, setClientReport] = useState<ClientReportProjection | null>(null);
+  const [shareLink, setShareLink] = useState<{ url: string; copied: boolean } | null>(null);
 
   const { data: lead, isLoading, refetch } = useQuery({
     queryKey: ["lead", leadId],
     queryFn: () => api.getLeadById(leadId),
   });
 
-  const proposal = (lead?.aiDiagnosis as AIDiagnosis) || null;
+  useEffect(() => {
+    async function loadData() {
+      if (!leadId) return;
+      try {
+        const [channelsData, draftsData, historyData, propData, repData] = await Promise.all([
+          api.getCompanyContactChannels(leadId),
+          api.getCompanyOutreachDrafts(leadId),
+          api.getDeliveryHistory(leadId),
+          api.getLatestProposal(leadId),
+          api.getClientReport(leadId),
+        ]);
 
-  const handleGenerateProposal = async () => {
+        setContactChannels(channelsData);
+        setDrafts(draftsData);
+        setEmailSubject(draftsData.email.subject || "");
+        setEmailBody(draftsData.email.body);
+        setWhatsappBody(draftsData.whatsapp.body);
+        setDeliveryHistory(historyData);
+        setProposalData(propData);
+        setClientReport(repData);
+
+        if (channelsData.availability === "WHATSAPP_ONLY") {
+          setOutreachChannel("WHATSAPP");
+        }
+      } catch (err) {
+        console.error("Error loading lead details:", err);
+      }
+    }
+
+    loadData();
+  }, [leadId]);
+
+  const handleDirectDispatch = async () => {
     try {
-      setIsGenerating(true);
-      await api.generateProposal(leadId);
+      setIsSending(true);
+      setSendResult(null);
+
+      const isEmail = outreachChannel === "EMAIL";
+      const destination = isEmail
+        ? contactChannels?.email.destination
+        : contactChannels?.whatsapp.destination;
+
+      if (!destination) {
+        setSendResult({
+          success: false,
+          message: "No hay un destino de contacto válido configurado.",
+        });
+        return;
+      }
+
+      const res = await api.dispatchOutreach({
+        leadId,
+        channel: outreachChannel,
+        destination,
+        subject: isEmail ? emailSubject : undefined,
+        body: isEmail ? emailBody : whatsappBody,
+        attachClientReport: attachReport,
+        idempotencyKey: `direct_${leadId}_${outreachChannel}_${Date.now()}`,
+      });
+
+      setSendResult({
+        success: res.success,
+        message: res.message,
+        providerId: res.providerMessageId || undefined,
+      });
+
+      const updatedHistory = await api.getDeliveryHistory(leadId);
+      setDeliveryHistory(updatedHistory);
       refetch();
-    } catch (err) {
-      alert("Error al generar propuesta: " + (err as any)?.message);
+    } catch (err: any) {
+      setSendResult({
+        success: false,
+        message: "Error en el despacho: " + (err?.message || "Error de servidor."),
+      });
     } finally {
-      setIsGenerating(false);
+      setIsSending(false);
     }
   };
 
-  const handleSendEmail = async () => {
+  const handleCreateShareLink = async () => {
     try {
-      setIsSendingEmail(true);
-      await api.sendEmail(leadId);
-      alert("¡Email enviado con éxito!");
-      refetch();
+      const res = await api.createShareLink(leadId);
+      const fullUrl = `${window.location.origin}${res.shareUrl}`;
+      navigator.clipboard.writeText(fullUrl);
+      setShareLink({ url: fullUrl, copied: true });
+      setTimeout(() => setShareLink((prev) => (prev ? { ...prev, copied: false } : null)), 3000);
     } catch (err) {
-      alert("Error al enviar email: " + (err as any)?.message);
-    } finally {
-      setIsSendingEmail(false);
+      console.error("Error creating share link:", err);
     }
-  };
-
-  const handleCopyText = (text: string) => {
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
   };
 
   if (isLoading || !lead) {
@@ -82,264 +155,249 @@ export default function LeadDetailClient() {
     );
   }
 
-  const auditItems = [
-    { label: "Sitio Web Operativo", passed: lead.hasWebsite, value: lead.websiteUrl || "No detectado" },
-    { label: "Certificado SSL (HTTPS)", passed: lead.hasValidSsl, value: lead.hasValidSsl ? "Válido" : "Inseguro" },
-    { label: "Dominio Propio (No gratuito)", passed: lead.hasCustomDomain, value: lead.hasCustomDomain ? "Propio" : "Subdominio" },
-    { label: "Instagram / Facebook", passed: lead.hasFacebook || lead.hasInstagram, value: (lead.hasFacebook || lead.hasInstagram) ? "Activo" : "No detectado" },
-    { label: "Canal Directo WhatsApp", passed: lead.hasWhatsapp, value: lead.hasWhatsapp ? "Integrado" : "No detectado" },
-    { label: "Reseñas Google Maps > 20", passed: (lead.googleUserRatingsTotal || 0) > 20, value: `${lead.googleUserRatingsTotal || 0} reseñas` },
-    { label: "Calificación Google > 4.0", passed: (lead.googleRating || 0) > 4.0, value: `${lead.googleRating?.toFixed(1) || 0} estrellas` },
-  ];
-
-  const whatsappMessage = proposal?.whatsappHook || `Hola ${lead.businessName}, somos VERTEX...`;
-  const cleanPhone = (lead.internationalPhone || "").replace(/[^0-9]/g, "");
-  const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(whatsappMessage)}`;
+  const activeChannel = outreachChannel === "EMAIL" ? contactChannels?.email : contactChannels?.whatsapp;
 
   return (
     <div className="flex-1 flex flex-col min-h-screen">
       <Header
         title={lead.businessName}
-        subtitle="Ficha Técnica y Generador de Propuesta Comercial con IA"
+        subtitle={`${lead.formattedAddress || "Ubicación detectada"} • Sector: ${(lead as any).sector || "General"}`}
       />
 
-      <main className="p-8 max-w-6xl w-full mx-auto space-y-6">
-        {/* Back Button */}
+      <main className="p-8 max-w-7xl w-full mx-auto space-y-6">
         <button
           onClick={() => router.back()}
-          className="inline-flex items-center gap-2 text-xs font-semibold text-gray-400 hover:text-white transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-white transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Volver al listado</span>
+          <span>Volver al listado de prospectos</span>
         </button>
 
-        {/* Lead Summary Hero */}
-        <div className="p-6 rounded-3xl bg-[#0e0e17]/80 border border-white/5 backdrop-blur-xl flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl">
-          <div className="space-y-1">
-            <div className="flex items-center gap-3">
-              <h2 className="text-2xl font-black text-white">{lead.businessName}</h2>
-              <OpportunityBadge tier={lead.opportunityTier} score={lead.opportunityScore} />
-            </div>
-            <p className="text-xs text-gray-400 flex items-center gap-2">
-              <span>{lead.formattedAddress}</span>
-              {lead.internationalPhone && (
-                <>
-                  <span>•</span>
-                  <span className="text-gray-300 font-mono">{lead.internationalPhone}</span>
-                </>
-              )}
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <span className="text-xs font-bold text-gray-400 bg-white/5 px-3 py-1.5 rounded-xl border border-white/5">
-              Estado: <strong className="text-white">{lead.status}</strong>
-            </span>
-          </div>
+        {/* Navigation Tabs */}
+        <div className="px-6 pt-3 border-b border-white/5 flex items-center gap-2 bg-[#0e0e17] rounded-t-2xl">
+          <button
+            onClick={() => setActiveTab("outreach")}
+            className={cn(
+              "py-3 px-4 text-xs font-bold flex items-center gap-2 border-b-2 transition-all",
+              activeTab === "outreach" ? "border-indigo-500 text-white" : "border-transparent text-gray-400 hover:text-white"
+            )}
+          >
+            <Send className="w-4 h-4 text-indigo-400" />
+            <span>Contacto Directo en App</span>
+          </button>
+          <button
+            onClick={() => setActiveTab("audit")}
+            className={cn(
+              "py-3 px-4 text-xs font-bold flex items-center gap-2 border-b-2 transition-all",
+              activeTab === "audit" ? "border-indigo-500 text-white" : "border-transparent text-gray-400 hover:text-white"
+            )}
+          >
+            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+            <span>Auditoría & Scoring Explicable</span>
+          </button>
+          <button
+            onClick={() => setActiveTab("proposal")}
+            className={cn(
+              "py-3 px-4 text-xs font-bold flex items-center gap-2 border-b-2 transition-all",
+              activeTab === "proposal" ? "border-indigo-500 text-white" : "border-transparent text-gray-400 hover:text-white"
+            )}
+          >
+            <Layers className="w-4 h-4 text-purple-400" />
+            <span>Propuesta del Catálogo</span>
+          </button>
+          <button
+            onClick={() => setActiveTab("reports")}
+            className={cn(
+              "py-3 px-4 text-xs font-bold flex items-center gap-2 border-b-2 transition-all",
+              activeTab === "reports" ? "border-indigo-500 text-white" : "border-transparent text-gray-400 hover:text-white"
+            )}
+          >
+            <FileText className="w-4 h-4 text-cyan-400" />
+            <span>Informes & Enlace Cliente</span>
+          </button>
         </div>
 
-        {/* 2-Column Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column: Scoring & Audit */}
-          <div className="space-y-6">
-            <div className="p-6 rounded-3xl bg-white/[0.02] border border-white/5 flex flex-col items-center justify-center text-center">
-              <ScoreGauge score={lead.opportunityScore} size={130} strokeWidth={10} label="Score Oportunidad VERTEX" />
-              <div className="mt-4 text-xs text-gray-400">
-                Madurez Digital Detectada: <strong className="text-white font-mono">{lead.digitalScore}/100</strong>
-              </div>
-            </div>
-
-            <div className="p-6 rounded-3xl bg-white/[0.02] border border-white/5 space-y-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">
-                Checklist de Madurez Digital
-              </h3>
-              <div className="space-y-3 text-xs">
-                {auditItems.map((item, idx) => (
-                  <div key={idx} className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      {item.passed ? (
-                        <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                      ) : (
-                        <XCircle className="w-4 h-4 text-red-400 shrink-0" />
-                      )}
-                      <span className="text-gray-300">{item.label}</span>
-                    </div>
-                    <span className="text-[11px] font-mono text-gray-400 truncate max-w-[120px]">
-                      {item.value}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column (2 cols): AI Studio */}
-          <div className="lg:col-span-2 space-y-4">
-            {/* Tabs */}
-            <div className="flex items-center gap-2 p-1.5 bg-white/[0.03] border border-white/5 rounded-2xl">
-              <button
-                onClick={() => setActiveTab("proposal")}
-                className={cn(
-                  "flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all",
-                  activeTab === "proposal"
-                    ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/20"
-                    : "text-gray-400 hover:text-white"
-                )}
-              >
-                <Mail className="w-4 h-4" />
-                <span>Propuesta Email</span>
-              </button>
-              <button
-                onClick={() => setActiveTab("whatsapp")}
-                className={cn(
-                  "flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all",
-                  activeTab === "whatsapp"
-                    ? "bg-emerald-600 text-white shadow-lg shadow-emerald-500/20"
-                    : "text-gray-400 hover:text-white"
-                )}
-              >
-                <MessageCircle className="w-4 h-4" />
-                <span>Gancho WhatsApp</span>
-              </button>
-            </div>
-
-            {/* AI Proposal Card */}
-            <div className="p-6 rounded-3xl bg-white/[0.02] border border-white/5 space-y-5">
-              {proposal ? (
-                <div className="space-y-4">
-                  {/* Diagnosis */}
-                  <div className="p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/20">
-                    <div className="text-xs font-bold text-indigo-300 uppercase mb-1 flex items-center gap-1.5">
-                      <Sparkles className="w-4 h-4 text-indigo-400" />
-                      Diagnóstico FODA Brecha Digital
-                    </div>
-                    <p className="text-xs text-indigo-100 leading-relaxed">
-                      {proposal.digitalGapAnalysis}
-                    </p>
-                  </div>
-
-                  {/* High Impact Services */}
-                  {proposal.highImpactServices?.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {proposal.highImpactServices.map((srv, idx) => (
-                        <span
-                          key={idx}
-                          className="px-3 py-1 rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-300 text-xs font-medium"
-                        >
-                          ✦ {srv}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Active Tab View */}
-                  {activeTab === "proposal" ? (
-                    <div className="space-y-3 pt-2">
-                      <div>
-                        <label className="text-xs font-bold text-gray-400 uppercase">
-                          Asunto del Correo
-                        </label>
-                        <div className="mt-1 p-3 rounded-xl bg-[#08080d] border border-white/10 text-xs text-white font-medium">
-                          {proposal.outreachEmail?.subject}
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="text-xs font-bold text-gray-400 uppercase">
-                          Cuerpo de la Propuesta
-                        </label>
-                        <div className="mt-1 p-4 rounded-xl bg-[#08080d] border border-white/10 text-xs text-gray-200 whitespace-pre-line leading-relaxed h-52 overflow-y-auto">
-                          {proposal.outreachEmail?.body}
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="space-y-3 pt-2">
-                      <label className="text-xs font-bold text-gray-400 uppercase">
-                        Mensaje Optimizado para WhatsApp Comercial
-                      </label>
-                      <div className="p-5 rounded-2xl bg-emerald-950/20 border border-emerald-500/20 text-xs text-emerald-100 whitespace-pre-line leading-relaxed">
-                        {proposal.whatsappHook}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Actions */}
-                  <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-white/5">
-                    <button
-                      onClick={() =>
-                        handleCopyText(
-                          activeTab === "proposal"
-                            ? `${proposal.outreachEmail.subject}\n\n${proposal.outreachEmail.body}`
-                            : proposal.whatsappHook
-                        )
-                      }
-                      className="px-4 py-2.5 rounded-xl border border-white/10 text-xs font-semibold text-gray-300 hover:text-white hover:bg-white/5 flex items-center gap-1.5 transition-all"
-                    >
-                      {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
-                      <span>{copied ? "Copiado al Portapapeles" : "Copiar Texto"}</span>
-                    </button>
-
-                    <div className="flex items-center gap-2">
-                      {lead.internationalPhone && (
-                        <a
-                          href={whatsappUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-emerald-600/20 transition-all"
-                        >
-                          <MessageCircle className="w-4 h-4" />
-                          <span>Abrir WhatsApp Web</span>
-                        </a>
-                      )}
-
-                      <button
-                        onClick={handleSendEmail}
-                        disabled={isSendingEmail}
-                        className="btn-accent text-xs font-bold py-2.5 px-5"
-                      >
-                        {isSendingEmail ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <Send className="w-4 h-4" />
-                        )}
-                        <span>Disparar Email</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center text-center p-12 space-y-4">
-                  <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center">
-                    <Sparkles className="w-7 h-7" />
-                  </div>
-                  <div>
-                    <h4 className="text-base font-bold text-white">Generar Propuesta Personalizada</h4>
-                    <p className="text-xs text-gray-400 max-w-md mt-1">
-                      El motor de IA generará un diagnóstico de brecha digital, oportunidades de servicios y un copy persuasivo personalizado.
-                    </p>
-                  </div>
+        {/* Tab Content */}
+        <div className="p-6 bg-[#0e0e17]/80 border border-white/5 rounded-b-2xl backdrop-blur-xl">
+          {activeTab === "outreach" && (
+            <div className="space-y-6">
+              {/* Channel Selector */}
+              <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-[#08080d] border border-white/5">
+                <div className="flex items-center gap-2">
                   <button
-                    onClick={handleGenerateProposal}
-                    disabled={isGenerating}
-                    className="btn-accent text-xs font-semibold py-3 px-8"
+                    onClick={() => setOutreachChannel("EMAIL")}
+                    className={cn(
+                      "px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all",
+                      outreachChannel === "EMAIL" ? "bg-indigo-600 text-white shadow-lg" : "text-gray-400 hover:text-white"
+                    )}
                   >
-                    {isGenerating ? (
+                    <Mail className="w-4 h-4" />
+                    <span>Correo Electrónico ({contactChannels?.email.destination || "Sin email"})</span>
+                  </button>
+                  <button
+                    onClick={() => setOutreachChannel("WHATSAPP")}
+                    className={cn(
+                      "px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all",
+                      outreachChannel === "WHATSAPP" ? "bg-emerald-600 text-white shadow-lg" : "text-gray-400 hover:text-white"
+                    )}
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    <span>WhatsApp ({contactChannels?.whatsapp.destination || "Sin teléfono"})</span>
+                  </button>
+                </div>
+
+                <div className="text-xs text-indigo-300 bg-indigo-500/10 px-3 py-1.5 rounded-xl border border-indigo-500/20">
+                  Despacho directo sin salir de la app
+                </div>
+              </div>
+
+              {/* Message Editor */}
+              <div className="space-y-4">
+                {outreachChannel === "EMAIL" ? (
+                  <div className="space-y-3">
+                    <div>
+                      <label className="text-[11px] font-bold text-gray-400 uppercase">Asunto del Correo</label>
+                      <input
+                        type="text"
+                        value={emailSubject}
+                        onChange={(e) => setEmailSubject(e.target.value)}
+                        className="mt-1 w-full p-2.5 rounded-xl bg-[#08080d] border border-white/10 text-xs text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[11px] font-bold text-gray-400 uppercase">Cuerpo de la Propuesta</label>
+                      <textarea
+                        rows={10}
+                        value={emailBody}
+                        onChange={(e) => setEmailBody(e.target.value)}
+                        className="mt-1 w-full p-3 rounded-xl bg-[#08080d] border border-white/10 text-xs text-gray-200 whitespace-pre-line leading-relaxed"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <label className="text-[11px] font-bold text-gray-400 uppercase">Mensaje para WhatsApp Comercial</label>
+                    <textarea
+                      rows={8}
+                      value={whatsappBody}
+                      onChange={(e) => setWhatsappBody(e.target.value)}
+                      className="mt-1 w-full p-3 rounded-xl bg-emerald-950/20 border border-emerald-500/20 text-xs text-emerald-100 whitespace-pre-line leading-relaxed"
+                    />
+                  </div>
+                )}
+
+                {/* Feedback Banner */}
+                {sendResult && (
+                  <div
+                    className={cn(
+                      "p-3.5 rounded-xl text-xs flex items-center gap-2",
+                      sendResult.success ? "bg-emerald-500/10 text-emerald-300 border border-emerald-500/20" : "bg-red-500/10 text-red-300 border border-red-500/20"
+                    )}
+                  >
+                    {sendResult.success ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <XCircle className="w-4 h-4 text-red-400" />}
+                    <span>{sendResult.message}</span>
+                  </div>
+                )}
+
+                <div className="flex items-center justify-between pt-2">
+                  <label className="flex items-center gap-2 cursor-pointer text-xs text-gray-300">
+                    <input
+                      type="checkbox"
+                      checked={attachReport}
+                      onChange={(e) => setAttachReport(e.target.checked)}
+                      className="rounded bg-white/5 border-white/10 text-indigo-600"
+                    />
+                    <span>Adjuntar enlace al Informe Técnico del Cliente</span>
+                  </label>
+
+                  <button
+                    onClick={handleDirectDispatch}
+                    disabled={isSending || !activeChannel?.destination}
+                    className={cn(
+                      "px-6 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 shadow-lg transition-all",
+                      outreachChannel === "EMAIL" ? "bg-indigo-600 hover:bg-indigo-500 text-white" : "bg-emerald-600 hover:bg-emerald-500 text-white",
+                      (!activeChannel?.destination || isSending) && "opacity-60 cursor-not-allowed"
+                    )}
+                  >
+                    {isSending ? (
                       <>
                         <Loader2 className="w-4 h-4 animate-spin" />
-                        <span>Generando con IA...</span>
+                        <span>Despachando...</span>
                       </>
                     ) : (
                       <>
-                        <Sparkles className="w-4 h-4" />
-                        <span>Generar con GPT-4o</span>
+                        <Send className="w-4 h-4" />
+                        <span>{outreachChannel === "EMAIL" ? "Enviar Correo Directo" : "Enviar WhatsApp Directo"}</span>
                       </>
                     )}
                   </button>
                 </div>
-              )}
+              </div>
             </div>
-          </div>
+          )}
+
+          {activeTab === "audit" && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/5 flex flex-col items-center justify-center text-center">
+                <ScoreGauge score={lead.opportunityScore} label="Oportunidad VERTEX" />
+                <div className="mt-4 text-xs text-gray-400">
+                  Madurez Digital: <strong className="text-white font-mono">{lead.digitalScore}/100</strong>
+                </div>
+              </div>
+              <div className="md:col-span-2 p-5 rounded-2xl bg-white/[0.02] border border-white/5 space-y-3">
+                <h3 className="text-xs font-bold uppercase text-gray-400">Dimensiones de Scoring</h3>
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="p-3 rounded-xl bg-[#08080d] text-center">
+                    <span className="text-[10px] text-gray-400 uppercase block">Necesidad Digital</span>
+                    <span className="text-xl font-bold text-indigo-400">{(lead as any).digitalNeedScore ?? (100 - lead.digitalScore)}/100</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-[#08080d] text-center">
+                    <span className="text-[10px] text-gray-400 uppercase block">Ajuste Servicios</span>
+                    <span className="text-xl font-bold text-purple-400">{(lead as any).serviceFitScore ?? 80}/100</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-[#08080d] text-center">
+                    <span className="text-[10px] text-gray-400 uppercase block">Confianza</span>
+                    <span className="text-xl font-bold text-emerald-400">{(lead as any).evidenceConfidenceScore ?? 85}%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "proposal" && (
+            <div className="space-y-4">
+              <h3 className="text-xs font-bold uppercase text-gray-400">Servicios Recomendados</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {(proposalData?.recommendedServices || []).map((srv, idx) => (
+                  <div key={idx} className="p-4 rounded-xl bg-[#08080d] border border-white/5 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-white">{srv.serviceName}</span>
+                      <span className="text-xs font-bold text-emerald-400 font-mono">{srv.priceFormatted}</span>
+                    </div>
+                    <p className="text-xs text-gray-400">{srv.rationale}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {activeTab === "reports" && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-4 rounded-xl bg-cyan-950/20 border border-cyan-500/20">
+                <span className="text-xs text-cyan-200">Enlace seguro para previsualización del cliente (72h)</span>
+                <button
+                  onClick={handleCreateShareLink}
+                  className="px-3.5 py-1.5 rounded-lg bg-cyan-600 text-white text-xs font-bold flex items-center gap-1.5"
+                >
+                  {shareLink?.copied ? <Check className="w-3.5 h-3.5 text-emerald-300" /> : <Share2 className="w-3.5 h-3.5" />}
+                  <span>{shareLink?.copied ? "Copiado" : "Copiar Enlace"}</span>
+                </button>
+              </div>
+              <div className="p-6 rounded-2xl bg-white text-slate-800">
+                <h4 className="text-sm font-bold text-slate-900">{clientReport?.executiveSummary}</h4>
+              </div>
+            </div>
+          )}
         </div>
       </main>
     </div>
