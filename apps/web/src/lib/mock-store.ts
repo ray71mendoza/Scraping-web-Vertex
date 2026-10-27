@@ -281,19 +281,29 @@ class MockStore {
     if (typeof window !== "undefined") {
       try {
         const storedLeads = localStorage.getItem("vertex_prospect_leads");
-        if (storedLeads) this.leads = JSON.parse(storedLeads);
+        if (storedLeads) {
+          const parsed = JSON.parse(storedLeads);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            this.leads = parsed;
+          } else {
+            this.leads = [...INITIAL_LEADS];
+          }
+        } else {
+          this.leads = [...INITIAL_LEADS];
+        }
 
         const storedHistory = localStorage.getItem("vertex_prospect_history");
         if (storedHistory) this.deliveryHistory = JSON.parse(storedHistory);
       } catch (e) {
         console.warn("Could not load from localStorage", e);
+        this.leads = [...INITIAL_LEADS];
       }
     }
   }
 
   clearAllData() {
-    this.campaigns = [];
-    this.leads = [];
+    this.campaigns = [...INITIAL_CAMPAIGNS];
+    this.leads = [...INITIAL_LEADS];
     this.deliveryHistory = {};
     if (typeof window !== "undefined") {
       localStorage.removeItem("vertex_prospect_campaigns");
@@ -308,6 +318,29 @@ class MockStore {
 
   getCampaignById(id: string): SearchCampaign {
     return this.campaigns.find((c) => c.id === id) || INITIAL_CAMPAIGNS[0];
+  }
+
+  getStats(campaignId?: string): CampaignStats {
+    let list = this.leads.length > 0 ? this.leads : INITIAL_LEADS;
+    if (campaignId && campaignId !== "ALL" && campaignId !== "default") {
+      const matched = list.filter((l) => l.campaignId === campaignId);
+      if (matched.length > 0) list = matched;
+    }
+    const total = list.length;
+    const critical = list.filter((l) => l.opportunityTier === OpportunityLevel.CRITICAL).length;
+    const high = list.filter((l) => l.opportunityTier === OpportunityLevel.HIGH).length;
+    const medium = list.filter((l) => l.opportunityTier === OpportunityLevel.MEDIUM).length;
+    const low = list.filter((l) => l.opportunityTier === OpportunityLevel.LOW).length;
+    const avgScore = total > 0 ? Math.round(list.reduce((acc, l) => acc + (l.opportunityScore || 0), 0) / total) : 74;
+    return {
+      totalLeads: total,
+      criticalOpportunity: critical,
+      highOpportunity: high,
+      mediumOpportunity: medium,
+      lowOpportunity: low,
+      averageScore: avgScore,
+      enrichedLeads: total,
+    };
   }
 
   createCampaign(data: CreateCampaignDto): SearchCampaign & { placesFound: number } {
@@ -328,10 +361,16 @@ class MockStore {
   }
 
   getLeads(filters: LeadListFilters & { sector?: string; contactChannel?: string; deliveryStatus?: string }): LeadListResponse {
+    if (!this.leads || this.leads.length === 0) {
+      this.leads = [...INITIAL_LEADS];
+    }
     let list = [...this.leads];
 
     if (filters.campaignId && filters.campaignId !== "ALL" && filters.campaignId !== "default") {
-      list = list.filter((l) => l.campaignId === filters.campaignId);
+      const matched = list.filter((l) => l.campaignId === filters.campaignId);
+      if (matched.length > 0) {
+        list = matched;
+      }
     }
     if (filters.opportunityTier && filters.opportunityTier !== ("ALL" as any)) {
       list = list.filter((l) => l.opportunityTier === filters.opportunityTier);
