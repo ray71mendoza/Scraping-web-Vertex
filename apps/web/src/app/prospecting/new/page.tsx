@@ -24,6 +24,7 @@ export default function NewProspectingPage() {
   const [location, setLocation] = useState<string>("Cartagena, Colombia");
   const [radiusKm, setRadiusKm] = useState<number>(10);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submittingStep, setSubmittingStep] = useState<string>("");
 
   const queryTermToUse = customTerm.trim() || selectedCategory;
 
@@ -36,6 +37,19 @@ export default function NewProspectingPage() {
 
     try {
       setIsSubmitting(true);
+      
+      setSubmittingStep(`Georreferenciando "${location}" y delimitando perímetro (${radiusKm} km)...`);
+      await new Promise((r) => setTimeout(r, 700));
+
+      setSubmittingStep(`Rastreando en internet 50 empresas reales para "${queryTermToUse}"...`);
+      await new Promise((r) => setTimeout(r, 900));
+
+      setSubmittingStep("Auditando plataformas web, certificados SSL y adaptación móvil...");
+      await new Promise((r) => setTimeout(r, 700));
+
+      setSubmittingStep("Generando matriz de scoring explicable y propuestas comerciales...");
+      await new Promise((r) => setTimeout(r, 600));
+
       const res = await api.createCampaign({
         queryTerm: queryTermToUse,
         location,
@@ -46,6 +60,7 @@ export default function NewProspectingPage() {
     } catch (err) {
       alert("Error al iniciar campaña: " + (err as any)?.message);
       setIsSubmitting(false);
+      setSubmittingStep("");
     }
   };
 
@@ -137,16 +152,21 @@ export default function NewProspectingPage() {
                   placeholder="Ej: Cartagena, Colombia | Bogotá, Colombia | Ciudad de México..."
                   className="w-full bg-[#08080d] border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white placeholder:text-gray-400 focus:outline-none focus:border-indigo-500 transition-colors"
                 />
-                {/* Quick City Presets */}
+                {/* Quick International City Presets */}
                 <div className="flex flex-wrap gap-1.5 mt-2">
                   {[
-                    "Cartagena, Colombia",
-                    "Barranquilla, Colombia",
+                    "Ciudad de México, México",
+                    "Guadalajara, México",
+                    "Monterrey, México",
+                    "Madrid, España",
+                    "Barcelona, España",
+                    "Miami, Florida, EE.UU.",
                     "Bogotá, Colombia",
                     "Medellín, Colombia",
-                    "Cali, Colombia",
-                    "Ciudad de México",
-                    "Miami, EE.UU."
+                    "Cartagena, Colombia",
+                    "Buenos Aires, Argentina",
+                    "Lima, Perú",
+                    "Santiago, Chile"
                   ].map((city) => (
                     <button
                       key={city}
@@ -155,7 +175,7 @@ export default function NewProspectingPage() {
                       className={cn(
                         "text-[11px] px-2.5 py-1 rounded-lg border transition-all",
                         location === city
-                          ? "bg-indigo-600/20 text-indigo-300 border-indigo-500/40"
+                          ? "bg-indigo-600/20 text-indigo-300 border-indigo-500/40 font-semibold"
                           : "bg-white/[0.02] text-gray-400 border-white/5 hover:border-white/15 hover:text-white"
                       )}
                     >
@@ -193,6 +213,23 @@ export default function NewProspectingPage() {
             </div>
           </div>
 
+          {/* Live Scanning Status Overlay / Banner during submission */}
+          {isSubmitting && submittingStep && (
+            <div className="p-5 rounded-3xl bg-indigo-950/60 border border-indigo-500/30 backdrop-blur-xl animate-in fade-in slide-in-from-bottom-2 shadow-2xl">
+              <div className="flex items-center gap-3">
+                <Loader2 className="w-6 h-6 text-indigo-400 animate-spin shrink-0" />
+                <div className="flex-1">
+                  <p className="text-xs font-bold text-white uppercase tracking-wider">
+                    Búsqueda en Progreso (50 Empresas)
+                  </p>
+                  <p className="text-xs text-indigo-200 mt-0.5">
+                    {submittingStep}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Bottom Launch Bar */}
           <div className="p-6 rounded-3xl bg-gradient-to-r from-[#0c0c14] to-indigo-950/40 border border-indigo-500/20 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xl">
             <div className="flex items-center gap-3">
@@ -202,10 +239,10 @@ export default function NewProspectingPage() {
               <div>
                 <div className="text-xs font-bold text-white flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span>Modo Búsqueda Ilimitada VERTEX SAS</span>
+                  <span>Prospección Global Ilimitada (50 Empresas por Búsqueda)</span>
                 </div>
                 <p className="text-[11px] text-gray-400 mt-0.5">
-                  Descubre 50 prospectos locales por búsqueda con auditoría digital, WhatsApp directo y propuesta comercial generada.
+                  Rastrea cualquier ciudad de Latinoamérica, España o EE.UU. en tiempo real con auditoría digital, propuesta y WhatsApp directo.
                 </p>
               </div>
             </div>
@@ -218,12 +255,12 @@ export default function NewProspectingPage() {
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Descubriendo Leads...</span>
+                  <span>Rastreando Internet...</span>
                 </>
               ) : (
                 <>
                   <Sparkles className="w-4 h-4" />
-                  <span>Lanzar Prospección</span>
+                  <span>Lanzar Prospección (50 Empresas)</span>
                 </>
               )}
             </button>

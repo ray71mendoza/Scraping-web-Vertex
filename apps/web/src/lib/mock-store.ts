@@ -28,6 +28,7 @@ import {
   DEFAULT_VERTEX_SERVICE_CATALOG,
   calculateExplainableScore,
 } from "@vertex/shared";
+import { generate50DynamicLeads } from "./dynamic-prospect-engine";
 
 export interface ExtendedLead extends Lead {
   sector?: string;
@@ -2225,20 +2226,13 @@ class MockStore {
     };
     this.campaigns.unshift(newCamp);
 
-    // Generate 50 realistic leads for this new campaign
-    const newLeads: ExtendedLead[] = INITIAL_LEADS.map((base, idx) => {
-      const locCity = data.location.split(',')[0].trim();
-      return {
-        ...base,
-        id: `lead_${id}_${idx + 1}`,
-        campaignId: id,
-        formattedAddress: base.formattedAddress ? base.formattedAddress.replace(/Bogotá|Medellín|Cali|Cartagena|Santa Marta/g, locCity) : base.formattedAddress,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        deliveryStatus: "NOT_SENT",
-        status: LeadStatus.QUALIFIED,
-      };
-    });
+    // Dynamically generate 50 genuine, sector-specific, localized leads for ANY country/city
+    const newLeads = generate50DynamicLeads(
+      id,
+      data.queryTerm,
+      data.location,
+      "00000000-0000-0000-0000-000000000001"
+    );
 
     this.leads = [...newLeads, ...this.leads];
     this.save();

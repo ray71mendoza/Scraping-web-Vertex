@@ -150,55 +150,84 @@ export class GooglePlacesService {
   }
 
   /**
-   * Generates a realistic dataset of 50 businesses tailored to the search query and city.
+   * Generates a realistic dataset of 50 businesses tailored to the search query and city across LatAm, Spain, or USA.
    */
   private getMockData(query: string, count = 50): GooglePlaceResult[] {
     const parts = query.split(/ en | in |,| - /i);
     const category = parts[0]?.trim() || 'Negocio';
-    const city = parts[1]?.trim() || 'Cartagena';
+    const city = parts[1]?.trim() || 'Ciudad de México';
+    const queryLower = query.toLowerCase();
+
+    // Detect country and dial code
+    let countryName = 'Colombia';
+    let dialCode = '+57';
+    let tld = '.com.co';
+
+    if (queryLower.includes('mex') || queryLower.includes('méx') || queryLower.includes('guadalajara') || queryLower.includes('monterrey') || queryLower.includes('cdmx')) {
+      countryName = 'México';
+      dialCode = '+52';
+      tld = '.com.mx';
+    } else if (queryLower.includes('españa') || queryLower.includes('spain') || queryLower.includes('madrid') || queryLower.includes('barcelona') || queryLower.includes('valencia')) {
+      countryName = 'España';
+      dialCode = '+34';
+      tld = '.es';
+    } else if (queryLower.includes('estados unidos') || queryLower.includes('usa') || queryLower.includes('eeuu') || queryLower.includes('miami') || queryLower.includes('florida')) {
+      countryName = 'Estados Unidos';
+      dialCode = '+1';
+      tld = '.com';
+    } else if (queryLower.includes('argentina') || queryLower.includes('buenos aires')) {
+      countryName = 'Argentina';
+      dialCode = '+54';
+      tld = '.com.ar';
+    } else if (queryLower.includes('peru') || queryLower.includes('perú') || queryLower.includes('lima')) {
+      countryName = 'Perú';
+      dialCode = '+51';
+      tld = '.com.pe';
+    } else if (queryLower.includes('chile') || queryLower.includes('santiago')) {
+      countryName = 'Chile';
+      dialCode = '+56';
+      tld = '.cl';
+    }
 
     const mockPlaces: GooglePlaceResult[] = [];
     const suffixes = [
       'Central', 'Express', 'Del Norte', 'San José', 'El Refugio', 'Elite', 'Sol & Luna',
-      'Plaza Real', 'Caribe', 'La Casona', 'Premium', 'Santa María', 'Metropolitano', 'Colonial',
-      'Marítimo', 'Bocagrande', 'Manga', 'Castillogrande', 'Getsemaní', 'Pie de la Popa',
-      'San Diego', 'El Cabrero', 'Crespo', 'Marbella', 'Américas', 'Provincia', 'Alborada',
+      'Plaza Real', 'Premium', 'Metropolitano', 'Colonial', 'San Diego', 'Américas',
       'Horizonte', 'San Pedro', 'Nueva Era', 'Especialistas', 'Integral', 'Vanguardia',
-      'Internacional', 'La Bahía', 'Los Alpes', 'Costa Azul', 'San Francisco', 'El Prado',
+      'Internacional', 'Los Alpes', 'Costa Azul', 'San Francisco', 'El Prado',
       'Alameda', 'Diamante', 'Portales', 'Mirador', 'Andina', 'Austral', 'San Luis',
-      'Conquistadores', 'Bicentenario', 'Península', 'Las Palmeras'
+      'Conquistadores', 'Bicentenario', 'Península', 'Las Palmeras', 'Reforma', 'Polanco',
+      'Gran Vía', 'Castellana', 'Providencia', 'Las Condes', 'Miraflores', 'Palermo'
     ];
 
     const streets = [
-      'Cra 2 #8-14', 'Cl 32 #5-18', 'Av San Martín #10-25', 'Calle del Torno #38-12',
-      'Av Santander #41-80', 'Cra 17 #24-30', 'Cl 25 #19-45', 'Av Pedro de Heredia #32-10',
-      'Cra 3 #6-50', 'Calle Larga #8B-22', 'Cra 6 #34-80', 'Cl 30 #17-100',
-      'Av Blas de Lezo #2-15', 'Calle del Arsenal #10-44', 'Cra 1 #12-30'
+      'Av. Principal #10-25', 'Calle Central #24-30', 'Av. Reforma #45-12', 'Calle 5 #19-45',
+      'Paseo Central #32-10', 'Av. Hidalgo #12-30', 'Calle Mayor #8-22', 'Av. Insurgentes #34-80',
+      'Av. del Sol #6-50', 'Calle Real #17-100', 'Av. Bolívar #2-15', 'Calle Sur #10-44'
     ];
 
     for (let i = 0; i < count; i++) {
       const suffix = suffixes[i % suffixes.length] + (i >= suffixes.length ? ` ${Math.floor(i / suffixes.length) + 1}` : '');
       const businessName = `${category} ${suffix}`;
       const street = streets[i % streets.length];
-      const address = `${street}, ${city}, Colombia`;
+      const address = `${street}, ${city}, ${countryName}`;
       const phoneNum = 3000000000 + (i * 123456) % 90000000;
       const rating = Number((3.5 + (i % 15) * 0.1).toFixed(1));
       const reviews = 5 + (i * 13) % 180;
       
-      // 40% of businesses don't have websites (huge digital gap / prime opportunity)
       const hasWeb = i % 5 !== 0 && i % 5 !== 2;
       const web = hasWeb
         ? (i % 3 === 0
-            ? `http://${businessName.toLowerCase().replace(/[^a-z0-9]/g, '')}.com` // HTTP / No SSL
-            : `https://www.${businessName.toLowerCase().replace(/[^a-z0-9]/g, '')}.com.co`)
+            ? `http://${businessName.toLowerCase().replace(/[^a-z0-9]/g, '')}.com`
+            : `https://www.${businessName.toLowerCase().replace(/[^a-z0-9]/g, '')}${tld}`)
         : null;
 
       mockPlaces.push({
-        placeId: `ChIJ_vertex_${city.toLowerCase().replace(/[^a-z0-9]/g, '')}_${i + 1}`,
+        placeId: `ChIJ_${countryName.toLowerCase()}_${city.toLowerCase().replace(/[^a-z0-9]/g, '')}_${i + 1}`,
         displayName: businessName,
         formattedAddress: address,
-        nationalPhoneNumber: `(605) ${phoneNum.toString().slice(0, 7)}`,
-        internationalPhoneNumber: `+57${phoneNum}`,
+        nationalPhoneNumber: `${phoneNum.toString().slice(0, 10)}`,
+        internationalPhoneNumber: `${dialCode}${phoneNum}`,
         websiteUri: web,
         rating,
         userRatingCount: reviews,
@@ -206,8 +235,8 @@ export class GooglePlacesService {
         businessStatus: 'OPERATIONAL',
         types: ['establishment', 'point_of_interest'],
         location: {
-          latitude: 10.391 + (i % 20) * 0.005,
-          longitude: -75.479 - (i % 20) * 0.005,
+          latitude: 19.4326 + (i % 20) * 0.005,
+          longitude: -99.1332 - (i % 20) * 0.005,
         },
       });
     }
