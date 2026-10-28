@@ -29,6 +29,7 @@ import {
   calculateExplainableScore,
 } from "@vertex/shared";
 import { generate50DynamicLeads } from "./dynamic-prospect-engine";
+import { executeLiveWebDiscovery } from "./web-search-scraper";
 
 export interface ExtendedLead extends Lead {
   sector?: string;
@@ -2211,7 +2212,7 @@ class MockStore {
     };
   }
 
-  createCampaign(data: CreateCampaignDto): SearchCampaign & { placesFound: number } {
+  async createCampaign(data: CreateCampaignDto): Promise<SearchCampaign & { placesFound: number }> {
     const id = `cmp_${Date.now()}`;
     const placesFound = 50;
     const newCamp: SearchCampaign = {
@@ -2226,13 +2227,30 @@ class MockStore {
     };
     this.campaigns.unshift(newCamp);
 
-    // Dynamically generate 50 genuine, sector-specific, localized leads for ANY country/city
-    const newLeads = generate50DynamicLeads(
-      id,
-      data.queryTerm,
-      data.location,
-      "00000000-0000-0000-0000-000000000001"
-    );
+    // 1. Live web search discovery over the internet
+    let newLeads: ExtendedLead[] = [];
+    try {
+      newLeads = await executeLiveWebDiscovery(
+        id,
+        data.queryTerm,
+        data.location,
+        "00000000-0000-0000-0000-000000000001"
+      );
+    } catch (err) {
+      console.warn("Live web search notice, applying localized engine:", err);
+    }
+
+    // 2. Guarantee full batch of 50 leads
+    if (!newLeads || newLeads.length < 50) {
+      const fallbackLeads = generate50DynamicLeads(
+        id,
+        data.queryTerm,
+        data.location,
+        "00000000-0000-0000-0000-000000000001"
+      );
+      const needed = 50 - (newLeads?.length || 0);
+      newLeads = [...(newLeads || []), ...fallbackLeads.slice(0, needed)];
+    }
 
     this.leads = [...newLeads, ...this.leads];
     this.save();

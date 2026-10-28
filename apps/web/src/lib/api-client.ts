@@ -76,7 +76,7 @@ export const api = {
         ...data,
       });
     } catch {
-      return mockStore.createCampaign(data);
+      return await mockStore.createCampaign(data);
     }
   },
 
